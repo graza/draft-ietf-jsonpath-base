@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2022-04-28T02:33:52.449032+00:00",
+  "timestamp": "2022-05-01T02:20:41.340507+00:00",
   "repo": "ietf-wg-jsonpath/draft-ietf-jsonpath-base",
   "labels": [
     {
@@ -7743,15 +7743,15 @@
       "id": "I_kwDOEIqrgc5GTwpO",
       "title": "Q: Should boolean literal be accepted (or rejected) in 3.5.8. Filter Selector",
       "url": "https://github.com/ietf-wg-jsonpath/draft-ietf-jsonpath-base/issues/178",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "cyrilMargaria",
       "authorAssociation": "NONE",
       "assignees": [],
       "labels": [],
       "body": "The filter selector is defined as \r\n```\r\nfilter-selector    = \"[\" S filter S \"]\"\r\nfilter             = \"?\" S boolean-expr\r\n```\r\n\r\nFilter like `[?(1==1)]` or `[?(1==2)]` are valid,  `[?(true)]` or  `[?(false)]` are logically equivalent but currently rejected. \r\n\r\nIs the intention to have true or false rejected or should the specification allow them? Having explicit text could be helpful.\r\nThis could be done for instance by using:\r\n```\r\nbasic-expr        = exist-expr /\r\n                    paren-expr /\r\n                    relation-expr / true / false\r\n```",
       "createdAt": "2022-03-24T14:18:48Z",
-      "updatedAt": "2022-04-26T10:21:43Z",
-      "closedAt": null,
+      "updatedAt": "2022-04-29T12:02:05Z",
+      "closedAt": "2022-04-29T06:45:24Z",
       "comments": [
         {
           "author": "goessner",
@@ -7794,6 +7794,41 @@
           "body": "There is no consensus among implementations for [$[?(true)]](https://cburgmer.github.io/json-path-comparison/results/filter_expression_with_value_true.html) or [$[?(false)]](https://cburgmer.github.io/json-path-comparison/results/filter_expression_with_value_false.html).",
           "createdAt": "2022-04-26T10:21:43Z",
           "updatedAt": "2022-04-26T10:21:43Z"
+        },
+        {
+          "author": "danielaparker",
+          "authorAssociation": "NONE",
+          "body": "A question for @goessner. \r\n\r\nIn Goessner Javascript JsonPath, given the document (from the JSONPath Comparisons)\r\n```\r\n[1, 3, \"nice\", true, null, false, {}, [], -1, 0, \"\"]\r\n```\r\nand selector\r\n```\r\n$[?(false)]\r\n``` \r\nthe result is `false`, indicating no matches, which I understand.\r\n\r\nBut for selector\r\n```\r\n$[?(true)]\r\n```\r\nthe result is\r\n\r\n```\r\n[1, 3, \"nice\", true, null, false, {}, [], -1]\r\n``` \r\nwhich I don't understand, I don't understand why the last two items in the array were not selected. Why is it doing that, what rules is it following that would produce that result?\r\n\r\nThe only way I can explain it is if Goessner Javascript JsonPath is substituting `true` with `@` in the selector, but why would it do that? \r\n\r\nIn the JSONPath Comparisons, all other implementations that returned a non empty result returned every item in the original array.\r\n\r\n\r\n\r\n\r\n\r\n",
+          "createdAt": "2022-04-28T19:05:11Z",
+          "updatedAt": "2022-04-28T19:15:48Z"
+        },
+        {
+          "author": "gregsdennis",
+          "authorAssociation": "COLLABORATOR",
+          "body": "On the recent call, we determined that `true` and `false` are fine for use as JSON literals (e.g. for comparisons like `[?(@.foo == true)]`), but it doesn't make sense to use them as _boolean_ values (e.g. as shown in the OP).  We couldn't find a compelling use case to support this outside debugging an expression.",
+          "createdAt": "2022-04-28T19:57:16Z",
+          "updatedAt": "2022-04-28T19:57:16Z"
+        },
+        {
+          "author": "goessner",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Yes, it's true, that we couldn't find an use case for `true` and `false` beside expression debugging.",
+          "createdAt": "2022-04-29T06:45:24Z",
+          "updatedAt": "2022-04-29T06:45:24Z"
+        },
+        {
+          "author": "goessner",
+          "authorAssociation": "COLLABORATOR",
+          "body": "@danielaparker:\r\n\r\nSince I pragmatically reused the JavaScript engine for expression evaluation, I can explain the result above only by the idea, that during iteration over array elements every item is converted to Boolean and then compared against `true`. This doesn't match the last 2 elements according to JavaScript rules.\r\n\r\nAs we do not allow type conversion, this result does not conform to JSONPath.",
+          "createdAt": "2022-04-29T06:51:32Z",
+          "updatedAt": "2022-04-29T06:53:54Z"
+        },
+        {
+          "author": "danielaparker",
+          "authorAssociation": "NONE",
+          "body": "> @danielaparker:\r\n> \r\n> Since I pragmatically reused the JavaScript engine for expression evaluation, I can explain the result above only by the idea, that during iteration over array elements every item is converted to Boolean and then compared against `true`. This doesn't match the last 2 elements according to JavaScript rules.\r\n> \r\n\r\nThanks, appreciated.",
+          "createdAt": "2022-04-29T12:02:05Z",
+          "updatedAt": "2022-04-29T12:02:05Z"
         }
       ]
     },
@@ -7847,15 +7882,15 @@
       "id": "I_kwDOEIqrgc5IVM_T",
       "title": "Filter expression selectors should require parentheses.",
       "url": "https://github.com/ietf-wg-jsonpath/draft-ietf-jsonpath-base/issues/183",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "gregsdennis",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [],
       "body": "From [this comment](https://github.com/ietf-wg-jsonpath/draft-ietf-jsonpath-base/pull/181#discussion_r856595706) it was stated that the current ABNF doesn't require parentheses around the expression in a filter expression.  The spec thus contains examples without them.\n\nPrevious discussions had occurred around making them optional, but no decision came out of them that I can recall.  The closest documented conversation I could find was [this comment](https://github.com/ietf-wg-jsonpath/draft-ietf-jsonpath-base/issues/92#issuecomment-809331011) by @goessner and the following comments which indicate that the parentheses are currently expected.\n\nTo be clear, we should currently require `[?(<expr>)]`, and disallow `[?<expr>]`.\n\nThe original blog post consistently uses them and never shows a filter expression selector without them.",
       "createdAt": "2022-04-24T03:37:35Z",
-      "updatedAt": "2022-04-26T17:26:59Z",
-      "closedAt": null,
+      "updatedAt": "2022-04-29T09:10:42Z",
+      "closedAt": "2022-04-28T20:06:29Z",
       "comments": [
         {
           "author": "cabo",
@@ -7912,6 +7947,97 @@
           "body": "> @goessner I know you already commented to the contrary, but your original post has this to say:\r\n> \r\n> > Filter expressions are supported via the syntax `?(<boolean expr>)` as in\r\n> > ```\r\n> > $.store.book[?(@.price < 10)].title\r\n> > ```\r\n> \r\n> I think this is pretty indicative that parentheses should be included as part of the required syntax. \r\n\r\nHardly indicative. Original Goessner JsonPath used JavaScript for evaluating filter expressions, I imagine that requiring the outer parentheses was just to provide a pragmatic way to delimit the JavaScript part, original Goessner JsonPath was not responsible for parsing that part. That consideration no longer applies when the syntax of filter expressions is defined in the JSONPath specification, mandatory outer parentheses no longer serve any purpose. \r\n\r\n> Taking this stance also aligns with our preference to accommodate existing implementations. While we say that this is a backward compatible change, it may not be. For instance, my parser won't recognize a filter selector without the parentheses. I expect many other existing implementations will be the same.\r\n\r\nBe real :-) The spec in its current form is incompatible to a lessor or greater extent with _all_ existing JSONPath implementations.  \r\n\r\n",
           "createdAt": "2022-04-26T17:26:30Z",
           "updatedAt": "2022-04-26T17:26:59Z"
+        },
+        {
+          "author": "goessner",
+          "authorAssociation": "COLLABORATOR",
+          "body": "I still vote for the lean syntax with optional parentheses in filter \nexpressions.\n\n* Old queries (having parentheses) can be handled by 'old' and 'new' \nimplementations without problems (backward compatibility). We don't \nbreak old 'query code'.\n\n* New queries (no parentheses) can be treated by 'new' implementations \nonly. This is the same behavior compared with regular expressions in \nfilters, not being understood by old implementations.\n\n\nThanks for Daniel also making that point.\n\n\nAm 26.04.2022 um 19:26 schrieb Daniel Parker:\n>\n>     @goessner <https://github.com/goessner> I know you already\n>     commented to the contrary, but your original post has this to say:\n>\n>         Filter expressions are supported via the syntax |?(<boolean\n>         expr>)| as in\n>\n>         ***@***.*** < 10)].title |\n>\n>     I think this is pretty indicative that parentheses should be\n>     included as part of the required syntax.\n>\n> Hardly. Original Goessner JsonPath used JavaScript for evaluating \n> filter expressions, I imagine that requiring the outer parentheses was \n> just to provide a pragmatic way to delimit the JavaScript part, \n> original Goessner JsonPath was not responsible for parsing that part. \n> That consideration no longer applies when the syntax of filter \n> expressions is defined in the JSONPath specification, mandatory outer \n> parentheses no longer serve any purpose.\n>\n>     Taking this stance also aligns with our preference to accommodate\n>     existing implementations. While we say that this is a backward\n>     compatible change, it may not be. For instance, my parser won't\n>     recognize a filter selector without the parentheses. I expect many\n>     other existing implementations will be the same.\n>\n> Be real :-) The spec in its current form is incompatible to a lessor \n> or greater extent with /all/ existing JSONPath implementations.\n>\n> \u2014\n> Reply to this email directly, view it on GitHub \n> <https://github.com/ietf-wg-jsonpath/draft-ietf-jsonpath-base/issues/183#issuecomment-1110062423>, \n> or unsubscribe \n> <https://github.com/notifications/unsubscribe-auth/ABFM6WUYMM3ZOFZMH4JVPBTVHARNDANCNFSM5UFTW2AQ>.\n> You are receiving this because you were mentioned.Message ID: \n> ***@***.***>\n>\n",
+          "createdAt": "2022-04-28T07:23:47Z",
+          "updatedAt": "2022-04-28T07:23:47Z"
+        },
+        {
+          "author": "gregsdennis",
+          "authorAssociation": "COLLABORATOR",
+          "body": "My issue isn't that existing paths can be handled by new implementations (what we're calling \"backward comparability\"), but rather the inverse: new paths won't be handled by existing implementations (\"forward compatibility\").\n\nUsers _will_ complain that their paths, which don't have parentheses, don't work.  Implementors will respond with, \"You need parentheses,\" and then users will be trained to use parentheses anyway.\n\nAs it stands, most users are _already_ trained to use parentheses because existing implementations require them.",
+          "createdAt": "2022-04-28T09:22:15Z",
+          "updatedAt": "2022-04-28T09:22:57Z"
+        },
+        {
+          "author": "cabo",
+          "authorAssociation": "MEMBER",
+          "body": "> My issue isn't that existing paths can be handled by new implementations (what we're calling \"backward compatibility\"), but rather the inverse: new paths won't be handled by existing implementations (\"forward compatibility\").\r\n\r\nRight.  For new features we can't expect forward compatibility anyway.  The discussion here was whether it is worth to reduce forward compatibility by admitting new syntax for existing, widely implemented features.  And I grudgingly have to acknowledge that that is a different question.\r\n\r\n> Users _will_ complain that their paths, which don't have parentheses, don't work. Implementors will respond with, \"You need parentheses,\" and then users will be trained to use parentheses anyway.\r\n\r\nActually, implementers will quickly fix that.\r\nBetween competing implementations, there is a race to accept the largest amount of inputs (within reason, i.e., balancing it with the cost of implementing them).\r\n\r\nBut, yes, query creators that care about widest compatibility will be trained to use the parentheses.\r\n\r\n(For me, actually, having a feature that only new implementations can understand is a feature.  So the expression will break on implementations that haven't been updated.  Darwin.  And a nice canary.)\r\n\r\n> As it stands, most users are _already_ trained to use parentheses because existing implementations require them.\r\n\r\nYes, which is part of the reason why I still think we would better give up on forward compatibility here in favor of cleaning up the query language.  But that is now a matter of taste, and I have to accept that there is a valid argument to the contrary.\r\n",
+          "createdAt": "2022-04-28T10:44:45Z",
+          "updatedAt": "2022-04-28T10:44:45Z"
+        },
+        {
+          "author": "danielaparker",
+          "authorAssociation": "NONE",
+          "body": "> My issue isn't that existing paths can be handled by new implementations (what we're calling \"backward comparability\"), but rather the inverse: new paths won't be handled by existing implementations (\"forward compatibility\").\r\n> \r\nAre you only concerned with new syntax? What about new semantics? For example, the draft is proposing new order of precedence rules that are different from all implementations and languages that I know of, including those of Python, JavaScript and C that some other implementations are following, so there are bound to be expressions that are syntactically the same but would now give the \"wrong\" result in existing implementations.   \r\n\r\nI just don't think it makes sense to go down this road. Users will understand that IETF JsonPath is just another take on the idea of JSONPath, an idea that took major forks from very early on. Any Stack Overflow question on JSONPath quickly establishes that the answers are generally implementation specific.",
+          "createdAt": "2022-04-28T19:45:09Z",
+          "updatedAt": "2022-04-28T19:53:47Z"
+        },
+        {
+          "author": "gregsdennis",
+          "authorAssociation": "COLLABORATOR",
+          "body": "I'm going to stop pushing this, but I would like to add this last comment.\n\nJSON Schema has had several forward-incompatible changes over the years as well that I've been fine with.  But the difference between this and those is that JSON Schema is already published and versioned.  It's easy to tell people, \"As of version _X_, this feature works differently.\"\n\nWe're not technically versioned as yet because we don't really have a proper publication from which a full implementation can be built (because we're not done).  It feels different to make this change for a 1.0.\n\nBut I'll follow the team's consensus.",
+          "createdAt": "2022-04-28T20:06:16Z",
+          "updatedAt": "2022-04-28T20:06:16Z"
+        },
+        {
+          "author": "cabo",
+          "authorAssociation": "MEMBER",
+          "body": "> the draft is proposing new order of precedence rules that are different from all implementations and languages that I know of, including those of Python, JavaScript and C that some other implementations are following,\r\n\r\nHave you submitted an issue?",
+          "createdAt": "2022-04-28T21:39:07Z",
+          "updatedAt": "2022-04-28T21:39:07Z"
+        },
+        {
+          "author": "danielaparker",
+          "authorAssociation": "NONE",
+          "body": "> > the draft is proposing new order of precedence rules that are different from all implementations and languages that I know of, including those of Python, JavaScript and C that some other implementations are following,\r\n> \r\n> Have you submitted an issue?\r\n\r\nNo. I would add that the fact that they're different doesn't mean that they're wrong, because languages like Python, JavaScript and C use different precedence orderings, particularly Python and JavaScript, see e.g. [Python (shown high to low)](https://docs.python.org/3/reference/expressions.html#operator-precedence) and [JavaScript (shown high to low)](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_Precedence#table), [XPath 3.1 (shown low to high)](https://www.w3.org/TR/xpath-31/#id-precedence-order), and [C (shown high to low, 1 is high)](https://en.cppreference.com/w/cpp/language/operator_precedence). My comment to @gregsdennis  was only about them being different.\r\n\r\n\r\n\r\n",
+          "createdAt": "2022-04-28T22:19:31Z",
+          "updatedAt": "2022-04-29T03:15:49Z"
+        },
+        {
+          "author": "cabo",
+          "authorAssociation": "MEMBER",
+          "body": "@danielaparker please do; I wasn't aware they are different.\r\n(Thanks for the pointers, very useful! -- the C one is a copy of the XPath one, though, and I can't resolve the Python one.)",
+          "createdAt": "2022-04-28T22:26:52Z",
+          "updatedAt": "2022-04-28T22:30:17Z"
+        },
+        {
+          "author": "danielaparker",
+          "authorAssociation": "NONE",
+          "body": "> @danielaparker please do; I wasn't aware they are different. (Thanks for the pointers, very useful! -- the C one is a copy of the XPath one, though, and I can't resolve the Python one.)\r\n\r\nAll right, [here it is](https://github.com/ietf-wg-jsonpath/draft-ietf-jsonpath-base/issues/188).",
+          "createdAt": "2022-04-29T02:52:07Z",
+          "updatedAt": "2022-04-29T02:52:07Z"
+        },
+        {
+          "author": "gregsdennis",
+          "authorAssociation": "COLLABORATOR",
+          "body": "I'm not sure what the big fuss about the precedences being different is.  For the operations we have defined, all of these are largely equivalent.\n\nSome have variation in that comparisons are higher than equality, but I'm not even sure under what circumstances that'd be useful.  Contrivingly, I could say\n\n```\na < b == c < d\n```\n\nas a shorthand for\n\n```\n(a < b && c < d) || (a >= b && c >= d)\n```\n\nbut that's stretching things, IMO.  I can't see that such a thing would be so useful that they'd add it into the language.\n\n@danielaparker do you know why that split in precedence is defined?",
+          "createdAt": "2022-04-29T03:03:59Z",
+          "updatedAt": "2022-04-29T03:03:59Z"
+        },
+        {
+          "author": "danielaparker",
+          "authorAssociation": "NONE",
+          "body": "@gregsdennis,\r\n\r\nMy own, personal view, is that it's unrewarding to think about precedences, and uninteresting to spend any time at all on thinking about the implications of trying something different. That's why my personal preference is to blindly follow what somebody else has already done, and not attempt anything new. I'd like to assume that the authors of C and Python have thought about this, I don't want to. \r\n\r\nSo, when I implemented this, I followed C, except where C didn't have `=~`, I followed Perl, and ended up with [this](https://danielaparker.github.io/JsonCons.Net/articles/JsonPath/JsonConsJsonPath.html#operator-precedence). If like @glyn I had a strong preference that the comparison and equality operators belonged at the same level, I would have chosen another language to follow that did that, Python qualifies, and used that language as a model for all operators, except  `=~`, which Python doesn't have, and gone with Perl again for that. What I _wouldn't_ do is is help myself to Python's comparison and equality operators, but C's logical not operator. As much as possible, I would want one model to base my implementation on.\r\n\r\nDaniel  \r\n\r\n ",
+          "createdAt": "2022-04-29T04:06:34Z",
+          "updatedAt": "2022-04-29T04:12:12Z"
+        },
+        {
+          "author": "goessner",
+          "authorAssociation": "COLLABORATOR",
+          "body": "very helpfull indeed.\r\n\r\nIIRC ... I took my first proposal of the precedence table from JavaScript (MDN), which should follow C. So I cannot explain the fact now, why `==, !=` has the same precedence as `<, >, <=, >=`.\r\n\r\nMaybe we also should follow C ... and also include an associativity column.\r\n\r\noh, and insert `=~` following Perl.\r\n\r\nthanks",
+          "createdAt": "2022-04-29T05:50:28Z",
+          "updatedAt": "2022-04-29T05:51:01Z"
+        },
+        {
+          "author": "gregsdennis",
+          "authorAssociation": "COLLABORATOR",
+          "body": "> why ==, != has the same precedence as <, >, <=, >=\n\nWhy is there a difference?\n\nI don't see how the precedence chain we've declared is any different than any of these languages.  They're semantically identical!\n\n- groups\n- not\n- comparison/equality (what benefit is there to separating these?)\n- logical and\n- logical or\n\nAll of the listed languages have this ordering.  What is being discussed here?\n",
+          "createdAt": "2022-04-29T09:10:41Z",
+          "updatedAt": "2022-04-29T09:10:41Z"
         }
       ]
     },
@@ -7961,6 +8087,79 @@
       "updatedAt": "2022-04-25T20:19:11Z",
       "closedAt": null,
       "comments": []
+    },
+    {
+      "number": 188,
+      "id": "I_kwDOEIqrgc5IspET",
+      "title": "Operator Precedence",
+      "url": "https://github.com/ietf-wg-jsonpath/draft-ietf-jsonpath-base/issues/188",
+      "state": "OPEN",
+      "author": "danielaparker",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "## Draft Operator Precedence\r\n\r\nThe proposed operator precedence in the draft is shown below.\r\n\r\nPrecedence | Operator type | Syntax\r\n-- | -- | --\r\n5 | Grouping | (...)\r\n4 | Logical NOT | !\r\n3 | Relations | ==,\u00a0!=,<,\u00a0<=,\u00a0>,\u00a0>=,=~\r\n2 | Logical AND | &&\r\n1 | Logical OR | \\|\\|\r\n\r\nIt is assumed that these precedences are motivated by existing languages, but it is also noted that operator precedence is different in different languages such as JavaScript and Python. For example, logical not has low precedence in Python but high precedence in JavaScript and C. The less than/greater than operators have higher precedence than the equality operators in JavaScript and C, but the same precedence in Python. Existing JSONPath implementations that follow these languages for evaluating filter expressions will also have these differences. \r\n\r\nThis issue, created by request, collects the comparable operator precedences for Python, JavaScript, Perl, C And XPath 3.1, to illustrate where they're similar to the draft, and where they differ. Perl is included because of these languages, it is the only one that has a `=~` operator. Note that in Perl, the precedence of the `=~` operator is higher than the comparison operators. \r\n\r\nOne comment: the draft operator precedence table should include an additional column for associativity, which is needed to fully describe the operator. The unary logical not operator should be shown as \"right associative\", and the binary operators should be shown as \"left associative\". \r\n\r\n## JavaScript Operator Precedence\r\n\r\nPrecedence | Operator type | Syntax|Associativity\r\n-- | -- | --|--\r\n7| Parentheses (grouping)|(...)|n/a\r\n6| Member Access, Computed Member Access|. a[]|left to right\r\n5| Logical NOT|! \u2026|right to left\r\n4|Less Than,Less Than Or Equal,Greater Than,Greater Than Or Equal,in|< <= > >= in|left to right\r\n3|Equality,Inequality|== !=|left to right\r\n2|Logical AND|&&|left to right\r\n1|Logical OR|&#124;&#124;|left to right\r\n\r\nSource: [JavaScript Operator Precedence](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_Precedence#table)\r\n\r\n## Perl Operator Precedence\r\n\r\nPrecedence | Operator type | Syntax|Associativity\r\n-- | -- | --|--\r\n9|Not (high precedence version)|!|left\r\n8|Regex match|=~ |left\r\n7|Comparison|< > <= >= lt gt le ge|chained \r\n6|Equal,not equal|== != |chain na\r\n5|Logical and|&&|left\r\n4|Logical or|&#124;&#124;|left\r\n3|Not (low precedence version)|not|right\r\n2|Logical and (lower precedence version)|and|left\r\n1|Logical or (higher precedence version)|or|left \r\n\r\nSource: [Perl Operator Precedence](https://perldoc.perl.org/5.005/perlop#SYNOPSIS)\r\n\r\nRemarks:\r\n\r\n- Unary \"not\" is equivalent to \"!\" except for lower precedence.\r\n- Binary \"and\" and \"or\" are equivalent to && and || except lower precedence\r\n\r\n## C Operator Precedence\r\n\r\nPrecedence | Operator type | Syntax|Associativity\r\n-- | -- | --|--\r\n6|Subscript, member access|a[] .|Left to right\r\n5|Logical not|!|Right to left\r\n4|Relational operators|<\u00a0\u00a0\u00a0<=\u00a0\u00a0\u00a0>\u00a0\u00a0\u00a0>=|Left to right\r\n3|Equality operators|== !=|Left to right\r\n2|Logical and|&&|Left to right\r\n1|Logical or|&#124;&#124;|Left to right\r\n\r\nSource: [C Operator Precedence](https://en.cppreference.com/w/cpp/language/operator_precedence)\r\n\r\n## Python Operator Precedence\r\n\r\nPrecedence | Operator type | Syntax\r\n-- | -- | --\r\n8| Parentheses (grouping)|()\r\n7|Slicing|x[index:index]\r\n6|Subscription|x[index]\r\n5|Attribute reference|x.attribute\r\n4|Comparisons, membership, identity|in, not in, is, is not, <, <=,  >,  >=,<>, !=, ==\r\n3|Boolean NOT|not x\r\n2|Boolean AND|and\r\n1|Boolean OR|or\r\n\r\nSource: [Python Operator Precedence](https://docs.python.org/3/reference/expressions.html#operator-precedence)\r\n\r\n## XPath 3.1 Operator Precedence\r\n\r\nPrecedence | Operator type | Syntax|Associativity\r\n-- | -- | --|--\r\n3|Comparisons|eq, ne, lt, le, gt, ge, =, !=, <, <=, >, >=|NA\r\n2|Logical and|and|Either\t\r\n1|Logical or|or|Either\t\r\n\r\nSource: [XPath 3.1](https://www.w3.org/TR/xpath-31/#id-precedence-order)\r\n\r\nRemarks:\r\n\r\n- XPath 3.1 and XQuery don't have a logical not operator, there's a `!` operator, but it's a binary operator that means something different. Instead, XPath 3.1 and XQuery provide the function [fn:not](https://www.w3.org/TR/xpath-functions-31/#func-not), whose precedence rules follow the rules for functions.",
+      "createdAt": "2022-04-29T02:50:48Z",
+      "updatedAt": "2022-04-29T19:00:47Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "glyn",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Since logical NOT binds more tightly than logical AND which binds more tightly than logical OR in all but one of the above tables and since we don't support comparison of predicates, I'm finding it hard to think of a case where the semantics differ between these tables. Can anyone provide such an example?",
+          "createdAt": "2022-04-29T07:37:08Z",
+          "updatedAt": "2022-04-29T07:37:08Z"
+        },
+        {
+          "author": "gregsdennis",
+          "authorAssociation": "COLLABORATOR",
+          "body": "> in all but one of the above tables\n\nWhich one?  They're all the same.",
+          "createdAt": "2022-04-29T09:21:57Z",
+          "updatedAt": "2022-04-29T09:21:57Z"
+        },
+        {
+          "author": "danielaparker",
+          "authorAssociation": "NONE",
+          "body": "> Since logical NOT binds more tightly than logical AND which binds more tightly than logical OR in all but one of the above tables and since we don't support comparison of predicates, I'm finding it hard to think of a case where the semantics differ between these tables. Can anyone provide such an example?\r\n\r\nOne might ask the question, if one were interested in these things, why is the draft precedence ordering slightly different from _all of_ Python, C, JavaScript and Perl? Why not make it the same as at least one of them? There is no difference in implementation effort.",
+          "createdAt": "2022-04-29T12:12:03Z",
+          "updatedAt": "2022-04-29T12:12:03Z"
+        },
+        {
+          "author": "cabo",
+          "authorAssociation": "MEMBER",
+          "body": "> why is the draft precedence ordering slightly different from _all of_ Python, C, JavaScript and Perl\r\n\r\nI think we are still decoding this statement.  Where is the difference?",
+          "createdAt": "2022-04-29T12:25:03Z",
+          "updatedAt": "2022-04-29T12:25:03Z"
+        },
+        {
+          "author": "danielaparker",
+          "authorAssociation": "NONE",
+          "body": "> > why is the draft precedence ordering slightly different from _all of_ Python, C, JavaScript and Perl\r\n> \r\n> I think we are still decoding this statement. Where is the difference?\r\n\r\nThe draft relational and equality/inequality operators are grouped together, like Python, but unlike C, JavaScript, and Perl.\r\n\r\nThe draft logical not binds high, like C and JavaScript, but unlike Python. (Perl being Perl has two logical nots, one that binds high and one that binds low, but are otherwise equivalent.)",
+          "createdAt": "2022-04-29T12:45:49Z",
+          "updatedAt": "2022-04-29T12:48:23Z"
+        },
+        {
+          "author": "glyn",
+          "authorAssociation": "COLLABORATOR",
+          "body": "> > in all but one of the above tables\r\n> \r\n> Which one? They're all the same.\r\n\r\nLogical NOT is missing from the XPath 3.1 table.",
+          "createdAt": "2022-04-29T13:02:30Z",
+          "updatedAt": "2022-04-29T13:02:30Z"
+        },
+        {
+          "author": "danielaparker",
+          "authorAssociation": "NONE",
+          "body": "> \r\n> Logical NOT is missing from the XPath 3.1 table.\r\n\r\nXPath 3.1 and XQuery don't have a logical not operator. Instead, they provide the function [fn:not](https://www.w3.org/TR/xpath-functions-31/#func-not), whose precedence rules follow the rules for functions (not shown in my table.) ",
+          "createdAt": "2022-04-29T13:16:45Z",
+          "updatedAt": "2022-04-29T13:23:21Z"
+        },
+        {
+          "author": "danielaparker",
+          "authorAssociation": "NONE",
+          "body": "> > Logical NOT is missing from the XPath 3.1 table.\r\n> \r\n> XPath 3.1 and XQuery don't have a logical not operator. Instead, they provide the function [fn:not](https://www.w3.org/TR/xpath-functions-31/#func-not), whose precedence rules follow the rules for functions (not shown in my table.)\r\n\r\nIt may also be interesting to compare with the [jsonata operator precedence](https://www.fernhillsoftware.com/help/jsonata/operators.html#:~:text=Introduction,to%20produce%20a%20single%20result.&text=Note%3A%20When%20multiple%20operators%20are,evaluated%20before%20lower%20priority%20operators). In [jsonata](https://jsonata.org/), like XPath 3.1, Boolean 'NOT' is a [function](https://docs.jsonata.org/boolean-functions#not), not an operator. ",
+          "createdAt": "2022-04-29T19:00:47Z",
+          "updatedAt": "2022-04-29T19:00:47Z"
+        }
+      ]
     }
   ],
   "pulls": [
@@ -29830,7 +30029,7 @@
       "labels": [],
       "body": "Per discussion at recent interim.",
       "createdAt": "2022-04-27T01:25:19Z",
-      "updatedAt": "2022-04-27T17:46:50Z",
+      "updatedAt": "2022-04-28T18:26:18Z",
       "baseRepository": "ietf-wg-jsonpath/draft-ietf-jsonpath-base",
       "baseRefName": "main",
       "baseRefOid": "6e11a51a8ed8426653ab4160f79a5c6a2b6c9e9f",
@@ -29880,6 +30079,112 @@
               "body": "Right, as in filter selectors. Should definitely mention them.  Now, I haven't used them so I have a basic question. All our examples are of the form \r\n\r\n`$.foo == \"bar\"`\r\n\r\nso the statement that you're comparing a string from the JSON to one from the JSONPath is still true.  But is it also legal to have a filter like `$.foo == $.bar`?  In that case you're comparing two strings from the JSON.  Which doesn't change the code points rule of course.",
               "createdAt": "2022-04-27T17:46:49Z",
               "updatedAt": "2022-04-27T17:46:50Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOEIqrgc44-jJ9",
+          "commit": {
+            "abbreviatedOid": "0da60a2"
+          },
+          "author": "glyn",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2022-04-28T06:29:42Z",
+          "updatedAt": "2022-04-28T06:29:42Z",
+          "comments": [
+            {
+              "originalPosition": 4,
+              "body": "Either side of `==` is a `comparable` which, for strings, could be either a string literal or a path beginning with `$` or `@`. So string comparisons include, for example:\r\n* `\"x\" == \"x\"`\r\n* `\"x\" == $.foo`\r\n* `$.foo == \"x\"`\r\n* `$.foo == $.bar`\r\n* `@.foo == \"x\"`\r\n* `@.foo == @.bar`\r\n* `@.foo == $.bar`\r\n* `$.bar == @.foo`\r\n\r\n(There are also examples which would evaluate to false because a string is being compared to another type, such as `\"true\" == true`.)",
+              "createdAt": "2022-04-28T06:29:42Z",
+              "updatedAt": "2022-04-28T06:29:42Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOEIqrgc44-kmw",
+          "commit": {
+            "abbreviatedOid": "0da60a2"
+          },
+          "author": "goessner",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2022-04-28T06:36:37Z",
+          "updatedAt": "2022-04-28T06:36:38Z",
+          "comments": [
+            {
+              "originalPosition": 4,
+              "body": "Despite `$.foo == $.bar` is valid in filters, it hardly makes sense. The current value `@` during iteration process plays no role.",
+              "createdAt": "2022-04-28T06:36:37Z",
+              "updatedAt": "2022-04-28T06:36:38Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOEIqrgc44-lEP",
+          "commit": {
+            "abbreviatedOid": "0da60a2"
+          },
+          "author": "goessner",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2022-04-28T06:38:51Z",
+          "updatedAt": "2022-04-28T06:38:51Z",
+          "comments": []
+        },
+        {
+          "id": "PRR_kwDOEIqrgc44-oGS",
+          "commit": {
+            "abbreviatedOid": "0da60a2"
+          },
+          "author": "glyn",
+          "authorAssociation": "COLLABORATOR",
+          "state": "CHANGES_REQUESTED",
+          "body": "Filter comparisons need to be included.",
+          "createdAt": "2022-04-28T06:52:30Z",
+          "updatedAt": "2022-04-28T06:52:30Z",
+          "comments": []
+        },
+        {
+          "id": "PRR_kwDOEIqrgc44-pGL",
+          "commit": {
+            "abbreviatedOid": "0da60a2"
+          },
+          "author": "glyn",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2022-04-28T06:56:49Z",
+          "updatedAt": "2022-04-28T06:56:49Z",
+          "comments": [
+            {
+              "originalPosition": 4,
+              "body": "> Despite `$.foo == $.bar` is valid in filters, it hardly makes sense. The current value `@` during iteration process plays no role.\r\n\r\nIt could make some kind of sense, e.g. to select an array element if and only if two values in the document happen to be equal. Comparisons such as `\"x\" == \"x\"` make less sense because they are constant predicates, true or false.",
+              "createdAt": "2022-04-28T06:56:49Z",
+              "updatedAt": "2022-04-28T06:56:49Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOEIqrgc45CNn0",
+          "commit": {
+            "abbreviatedOid": "0da60a2"
+          },
+          "author": "timbray",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2022-04-28T18:26:17Z",
+          "updatedAt": "2022-04-28T18:26:18Z",
+          "comments": [
+            {
+              "originalPosition": 4,
+              "body": "Actually, I can imagine something like `$.submittedBy == $.resourceOwner`\r\n\r\n(actually more likely != but the point stands)\r\n\r\nWill update the PR",
+              "createdAt": "2022-04-28T18:26:18Z",
+              "updatedAt": "2022-04-28T18:26:18Z"
             }
           ]
         }
