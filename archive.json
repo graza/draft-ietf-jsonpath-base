@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2022-05-03T02:00:41.673336+00:00",
+  "timestamp": "2022-05-29T02:08:12.618373+00:00",
   "repo": "ietf-wg-jsonpath/draft-ietf-jsonpath-base",
   "labels": [
     {
@@ -8158,6 +8158,51 @@
           "body": "> > Logical NOT is missing from the XPath 3.1 table.\r\n> \r\n> XPath 3.1 and XQuery don't have a logical not operator. Instead, they provide the function [fn:not](https://www.w3.org/TR/xpath-functions-31/#func-not), whose precedence rules follow the rules for functions (not shown in my table.)\r\n\r\nIt may also be interesting to compare with the [jsonata operator precedence](https://www.fernhillsoftware.com/help/jsonata/operators.html#:~:text=Introduction,to%20produce%20a%20single%20result.&text=Note%3A%20When%20multiple%20operators%20are,evaluated%20before%20lower%20priority%20operators). In [jsonata](https://jsonata.org/), like XPath 3.1, Boolean 'NOT' is a [function](https://docs.jsonata.org/boolean-functions#not), not an operator. ",
           "createdAt": "2022-04-29T19:00:47Z",
           "updatedAt": "2022-04-29T19:00:47Z"
+        }
+      ]
+    },
+    {
+      "number": 189,
+      "id": "I_kwDOEIqrgc5Kc_Lg",
+      "title": "Queries of properties containing special characters",
+      "url": "https://github.com/ietf-wg-jsonpath/draft-ietf-jsonpath-base/issues/189",
+      "state": "OPEN",
+      "author": "csuwildcat",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "I'm seeking clarification on whether the current spec takes into account queries targeting properties that contain characters that may overlap with characters used for various purposes within JSONPath. The clearest example of this that we have run into in other spec work that seeks to rely on JSONPath is the case of properties that contain the `@` sign. This often presents when attempting to target the `@context` property in JSON-LD documents.\r\n\r\nI'm hoping the spec 1) does or will allow a means to query by properties that contain such characters, and 2) includes examples/tests showing how such queries are correctly constructed. If this is already allowed by the spec, thank you in advance, and I'd love a pointer to the example/test. If this isn't yet permitted, I'd be happy to help do the work to account for it in spec text and tests.",
+      "createdAt": "2022-05-26T05:21:14Z",
+      "updatedAt": "2022-05-27T02:12:25Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "cabo",
+          "authorAssociation": "MEMBER",
+          "body": "`$['@context']`",
+          "createdAt": "2022-05-26T05:24:02Z",
+          "updatedAt": "2022-05-26T05:24:02Z"
+        },
+        {
+          "author": "cabo",
+          "authorAssociation": "MEMBER",
+          "body": "That said, JSONPath is of somewhat limited value for querying JSON-LD as it works on the JSON level, not on the RDF level.  A proper query to an JSON-LD document would need to perform the JSON-LD processing rules before operating on the resulting data model level items (triples).",
+          "createdAt": "2022-05-26T05:26:35Z",
+          "updatedAt": "2022-05-26T05:26:35Z"
+        },
+        {
+          "author": "csuwildcat",
+          "authorAssociation": "NONE",
+          "body": "> That said, JSONPath is of somewhat limited value for querying JSON-LD as it works on the JSON level, not on the RDF level. A proper query to an JSON-LD document would need to perform the JSON-LD processing rules before operating on the resulting data model level items (triples).\r\n\r\nWell aware of the processing phase of JSON-LD, but in this case the checks are for context URI presence to identify that the general object is inclusive of a general type of data. The fact the standard spec clarifies and allows for this is great, and means the class of issues folks have seen with some libraries are more conformance issues at the lib level than anything indicative of a spec concern. Thank you for your answer, I'd consider this good to close (unless there's a desire to include a specific example or reference of what you clarified in the spec).",
+          "createdAt": "2022-05-26T10:32:48Z",
+          "updatedAt": "2022-05-26T10:32:48Z"
+        },
+        {
+          "author": "gregsdennis",
+          "authorAssociation": "COLLABORATOR",
+          "body": "I believe there are tests for this already.  I'm pretty sure it's in the comparison project, at least.",
+          "createdAt": "2022-05-27T02:12:25Z",
+          "updatedAt": "2022-05-27T02:12:25Z"
         }
       ]
     }
