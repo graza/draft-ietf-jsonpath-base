@@ -5,10 +5,10 @@
 JSONPath WG                                              S. Gössner, Ed.
 Internet-Draft                                   Fachhochschule Dortmund
 Intended status: Standards Track                      G. Normington, Ed.
-Expires: 27 October 2022                                                
+Expires: 1 December 2022                                                
                                                          C. Bormann, Ed.
                                                   Universität Bremen TZI
-                                                           25 April 2022
+                                                             30 May 2022
 
 
                   JSONPath: Query expressions for JSON
@@ -48,7 +48,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 27 October 2022.
+   This Internet-Draft will expire on 1 December 2022.
 
 Copyright Notice
 
@@ -794,7 +794,8 @@ Examples
 
    {
      "o": {"j j": {"k.k": 3}},
-     "a": ["a","b"]
+     "a": ["a","b"],
+     "'": {"@": 2}
    }
 
    Queries:
@@ -803,15 +804,18 @@ Examples
      |       Query       | Result | Result Paths | Comment          |
      +===================+========+==============+==================+
      | $.o['j j']['k.k'] | 3      |  $['o']['j   | Named value in   |
-     |                   |        |  ']['k.k']   | nested object    |
+     |                   |        |  j']['k.k']  | nested object    |
      +-------------------+--------+--------------+------------------+
      | $.o["j j"]["k.k"] | 3      |  $['o']['j   | Named value in   |
-     |                   |        |  ']['k.k']   | nested object    |
+     |                   |        |  j']['k.k']  | nested object    |
      +-------------------+--------+--------------+------------------+
      |       $.a[1]      | "b"    |  $['a'][1]   | Member of array  |
      +-------------------+--------+--------------+------------------+
      |      $.a[-2]      | "a"    |  $['a'][0]   | Member of array, |
      |                   |        |              | from the end     |
+     +-------------------+--------+--------------+------------------+
+     |    $["'"]["@"]    | 2      | $['\'']['@'] | Unusual member   |
+     |                   |        |              | names            |
      +-------------------+--------+--------------+------------------+
 
                      Table 7: Index selector examples
@@ -1608,9 +1612,9 @@ Examples
    [I-D.draft-bormann-jsonpath-iregexp]
               Bormann, C. and T. Bray, "I-Regexp: An Interoperable
               Regexp Format", Work in Progress, Internet-Draft, draft-
-              bormann-jsonpath-iregexp-03, 7 March 2022,
+              bormann-jsonpath-iregexp-04, 25 April 2022,
               <https://datatracker.ietf.org/doc/html/draft-bormann-
-              jsonpath-iregexp-03>.
+              jsonpath-iregexp-04>.
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
