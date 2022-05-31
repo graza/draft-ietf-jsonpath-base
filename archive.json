@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2022-05-29T02:08:12.618373+00:00",
+  "timestamp": "2022-05-31T01:59:34.509126+00:00",
   "repo": "ietf-wg-jsonpath/draft-ietf-jsonpath-base",
   "labels": [
     {
@@ -8166,15 +8166,17 @@
       "id": "I_kwDOEIqrgc5Kc_Lg",
       "title": "Queries of properties containing special characters",
       "url": "https://github.com/ietf-wg-jsonpath/draft-ietf-jsonpath-base/issues/189",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "csuwildcat",
       "authorAssociation": "NONE",
-      "assignees": [],
+      "assignees": [
+        "glyn"
+      ],
       "labels": [],
       "body": "I'm seeking clarification on whether the current spec takes into account queries targeting properties that contain characters that may overlap with characters used for various purposes within JSONPath. The clearest example of this that we have run into in other spec work that seeks to rely on JSONPath is the case of properties that contain the `@` sign. This often presents when attempting to target the `@context` property in JSON-LD documents.\r\n\r\nI'm hoping the spec 1) does or will allow a means to query by properties that contain such characters, and 2) includes examples/tests showing how such queries are correctly constructed. If this is already allowed by the spec, thank you in advance, and I'd love a pointer to the example/test. If this isn't yet permitted, I'd be happy to help do the work to account for it in spec text and tests.",
       "createdAt": "2022-05-26T05:21:14Z",
-      "updatedAt": "2022-05-27T02:12:25Z",
-      "closedAt": null,
+      "updatedAt": "2022-05-30T20:42:12Z",
+      "closedAt": "2022-05-30T20:42:11Z",
       "comments": [
         {
           "author": "cabo",
@@ -8203,8 +8205,40 @@
           "body": "I believe there are tests for this already.  I'm pretty sure it's in the comparison project, at least.",
           "createdAt": "2022-05-27T02:12:25Z",
           "updatedAt": "2022-05-27T02:12:25Z"
+        },
+        {
+          "author": "glyn",
+          "authorAssociation": "COLLABORATOR",
+          "body": "I added an example with the characters `'` and `@` in member names. In doing so, I observed that some implementations didn't cope very well, at least with `'`. In particular, [Jayway](https://jsonpath.herokuapp.com/) when presented with the JSON document:\r\n```\r\n    {\r\n      \"'\": 1\r\n    }\r\n``` \r\nand the JSONPath `$[\"'\"]` gave the correct matching value (`1`) but gave an invalid normalized path expression (`$[''']` - the inner `'` is not escaped).",
+          "createdAt": "2022-05-30T10:45:16Z",
+          "updatedAt": "2022-05-30T10:45:16Z"
+        },
+        {
+          "author": "glyn",
+          "authorAssociation": "COLLABORATOR",
+          "body": "> I believe there are tests for this already. I'm pretty sure it's in the comparison project, at least.\r\n\r\nYes: https://cburgmer.github.io/json-path-comparison/results/bracket_notation_with_quoted_current_object_literal.html.",
+          "createdAt": "2022-05-30T10:47:35Z",
+          "updatedAt": "2022-05-30T10:47:35Z"
         }
       ]
+    },
+    {
+      "number": 190,
+      "id": "I_kwDOEIqrgc5KqEr5",
+      "title": "Typos in index selector examples",
+      "url": "https://github.com/ietf-wg-jsonpath/draft-ietf-jsonpath-base/issues/190",
+      "state": "CLOSED",
+      "author": "glyn",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [
+        "glyn"
+      ],
+      "labels": [],
+      "body": "The following result path of two examples is missing a `j`:\r\n```\r\n$['o']['j ']['k.k']\r\n```",
+      "createdAt": "2022-05-30T10:37:42Z",
+      "updatedAt": "2022-05-30T20:42:11Z",
+      "closedAt": "2022-05-30T20:42:11Z",
+      "comments": []
     }
   ],
   "pulls": [
@@ -30074,7 +30108,7 @@
       "labels": [],
       "body": "Per discussion at recent interim.",
       "createdAt": "2022-04-27T01:25:19Z",
-      "updatedAt": "2022-05-02T06:08:07Z",
+      "updatedAt": "2022-05-30T10:15:37Z",
       "baseRepository": "ietf-wg-jsonpath/draft-ietf-jsonpath-base",
       "baseRefName": "main",
       "baseRefOid": "6e11a51a8ed8426653ab4160f79a5c6a2b6c9e9f",
@@ -30257,6 +30291,76 @@
           "body": "",
           "createdAt": "2022-05-02T06:08:07Z",
           "updatedAt": "2022-05-02T06:08:07Z",
+          "comments": []
+        },
+        {
+          "id": "PRR_kwDOEIqrgc469M9U",
+          "commit": {
+            "abbreviatedOid": "0da60a2"
+          },
+          "author": "glyn",
+          "authorAssociation": "COLLABORATOR",
+          "state": "CHANGES_REQUESTED",
+          "body": "Filter comparisons need to be included.\r\n\r\n@timbray ok?",
+          "createdAt": "2022-05-30T10:15:37Z",
+          "updatedAt": "2022-05-30T10:15:37Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 191,
+      "id": "PR_kwDOEIqrgc44rGHO",
+      "title": "Add example of member name containing @",
+      "url": "https://github.com/ietf-wg-jsonpath/draft-ietf-jsonpath-base/pull/191",
+      "state": "MERGED",
+      "author": "glyn",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [
+        "glyn"
+      ],
+      "labels": [],
+      "body": "Also fix a couple of typos.\r\n\r\nFixes https://github.com/ietf-wg-jsonpath/draft-ietf-jsonpath-base/issues/190\r\nFixes https://github.com/ietf-wg-jsonpath/draft-ietf-jsonpath-base/issues/189\r\n",
+      "createdAt": "2022-05-30T10:39:36Z",
+      "updatedAt": "2022-05-30T20:42:15Z",
+      "baseRepository": "ietf-wg-jsonpath/draft-ietf-jsonpath-base",
+      "baseRefName": "main",
+      "baseRefOid": "6e11a51a8ed8426653ab4160f79a5c6a2b6c9e9f",
+      "headRepository": "ietf-wg-jsonpath/draft-ietf-jsonpath-base",
+      "headRefName": "@-in-object-key",
+      "headRefOid": "afedf6d81ccc94e7f866dcc912bcac9062938249",
+      "closedAt": "2022-05-30T20:42:12Z",
+      "mergedAt": "2022-05-30T20:42:11Z",
+      "mergedBy": "glyn",
+      "mergeCommit": {
+        "oid": "9d7154bd154689360341ce115040a02c583cb6be"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOEIqrgc46_PND",
+          "commit": {
+            "abbreviatedOid": "afedf6d"
+          },
+          "author": "gregsdennis",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2022-05-30T20:04:14Z",
+          "updatedAt": "2022-05-30T20:04:14Z",
+          "comments": []
+        },
+        {
+          "id": "PRR_kwDOEIqrgc46_SQp",
+          "commit": {
+            "abbreviatedOid": "afedf6d"
+          },
+          "author": "cabo",
+          "authorAssociation": "MEMBER",
+          "state": "APPROVED",
+          "body": "As the \"j j\" fix demonstrates, we really need to auto-check these.\r\nEyeballing-wise, this change looks good.",
+          "createdAt": "2022-05-30T20:33:17Z",
+          "updatedAt": "2022-05-30T20:33:17Z",
           "comments": []
         }
       ]
