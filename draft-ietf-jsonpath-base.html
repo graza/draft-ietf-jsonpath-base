@@ -1048,7 +1048,7 @@ svg [stroke="fill"], svg [fill^="#fff"] {
 </tr></thead>
 <tfoot><tr>
 <td class="left">Gössner, et al.</td>
-<td class="center">Expires 1 December 2022</td>
+<td class="center">Expires 2 December 2022</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1061,12 +1061,12 @@ svg [stroke="fill"], svg [fill^="#fff"] {
 <dd class="internet-draft">draft-ietf-jsonpath-base-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2022-05-30" class="published">30 May 2022</time>
+<time datetime="2022-05-31" class="published">31 May 2022</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2022-12-01">1 December 2022</time></dd>
+<dd class="expires"><time datetime="2022-12-02">2 December 2022</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1125,7 +1125,7 @@ within a JavaScript Object Notation (JSON, RFC 8259) value.<a href="#section-abs
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 1 December 2022.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 2 December 2022.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -2338,7 +2338,7 @@ not exist; this simply means that no element is selected.<a href="#section-3.5.4
 <div class="alignLeft art-text artwork" id="section-3.5.4.3-2">
 <pre>
 {
-  "o": {"j j": {"k.k": 3}},
+  "o": {"j j": {"k.k": 3}},
   "a": ["a","b"],
   "'": {"@": 2}
 }
@@ -2361,25 +2361,25 @@ not exist; this simply means that no element is selected.<a href="#section-3.5.4
               <tbody>
                 <tr>
                   <td class="text-center" rowspan="1" colspan="1">
-                    <code>$.o['j j']['k.k']</code>
+                    <code>$.o['j j']['k.k']</code>
 </td>
                   <td class="text-left" rowspan="1" colspan="1">
                     <code>3</code>
 </td>
                   <td class="text-center" rowspan="1" colspan="1">
-                    <code>$['o']['j j']['k.k']</code>
+                    <code>$['o']['j j']['k.k']</code>
 </td>
                   <td class="text-left" rowspan="1" colspan="1">Named value in nested object</td>
                 </tr>
                 <tr>
                   <td class="text-center" rowspan="1" colspan="1">
-                    <code>$.o["j j"]["k.k"]</code>
+                    <code>$.o["j j"]["k.k"]</code>
 </td>
                   <td class="text-left" rowspan="1" colspan="1">
                     <code>3</code>
 </td>
                   <td class="text-center" rowspan="1" colspan="1">
-                    <code>$['o']['j j']['k.k']</code>
+                    <code>$['o']['j j']['k.k']</code>
 </td>
                   <td class="text-left" rowspan="1" colspan="1">Named value in nested object</td>
                 </tr>
@@ -2408,7 +2408,9 @@ not exist; this simply means that no element is selected.<a href="#section-3.5.4
                   <td class="text-left" rowspan="1" colspan="1">Member of array, from the end</td>
                 </tr>
                 <tr>
-                  <td class="text-center" rowspan="1" colspan="1">$["'"]["@"]</td>
+                  <td class="text-center" rowspan="1" colspan="1">
+                    <code>$["'"]["@"]</code>
+</td>
                   <td class="text-left" rowspan="1" colspan="1">
                     <code>2</code>
 </td>
@@ -3535,7 +3537,7 @@ normal-escapable          = ( %x62 / %x66 / %x6E / %x72 / %x74 / ; \b \f \n \r \
                                 ; r /         ;  CR carriage return U+000D
                                 "'" /         ;  ' apostrophe U+0027
                                 "\" /         ;  \ backslash (reverse solidus) U+005C
-                                (%x75 normal-hexchar) ;  certain values u00XX U+00XX
+                                (%x75 normal-hexchar) ;  certain values u00xx U+00XX
                             )
 normal-hexchar            = "0" "0"
                             (
@@ -3593,8 +3595,37 @@ normal-element-index      = "0" / (DIGIT1 *DIGIT) ; non-negative decimal integer
 </td>
                 <td class="text-left" rowspan="1" colspan="1">Nested structure</td>
               </tr>
+              <tr>
+                <td class="text-center" rowspan="1" colspan="1">
+                  <code>$["\u000B"]</code>
+</td>
+                <td class="text-center" rowspan="1" colspan="1">
+                  <code>$['\u000b']</code>
+</td>
+                <td class="text-left" rowspan="1" colspan="1">Unicode escape</td>
+              </tr>
+              <tr>
+                <td class="text-center" rowspan="1" colspan="1">
+                  <code>$["\u0061"]</code>
+</td>
+                <td class="text-center" rowspan="1" colspan="1">
+                  <code>$['a']</code>
+</td>
+                <td class="text-left" rowspan="1" colspan="1">Unicode character</td>
+              </tr>
+              <tr>
+                <td class="text-center" rowspan="1" colspan="1">
+                  <code>$["\u00b1"]</code>
+</td>
+                <td class="text-center" rowspan="1" colspan="1">
+                  <span class="unicode">$['±'] (U+0024 U+005B U+0027 U+00B1 U+0027 U+005D)</span>
+</td>
+                <td class="text-left" rowspan="1" colspan="1">Unicode character</td>
+              </tr>
             </tbody>
           </table>
+<p id="section-3.7.1-2"><code>$["\u00b1"]</code> is normalized into <span class="contact-name">$['±']</span> (noise in the
+table and lack of typewriter font is due to RFCXMLv3 limitations).<a href="#section-3.7.1-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
