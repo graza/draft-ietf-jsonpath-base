@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2022-05-31T01:59:34.509126+00:00",
+  "timestamp": "2022-06-02T02:00:25.625403+00:00",
   "repo": "ietf-wg-jsonpath/draft-ietf-jsonpath-base",
   "labels": [
     {
@@ -8239,6 +8239,88 @@
       "updatedAt": "2022-05-30T20:42:11Z",
       "closedAt": "2022-05-30T20:42:11Z",
       "comments": []
+    },
+    {
+      "number": 193,
+      "id": "I_kwDOEIqrgc5KtI8l",
+      "title": "Unfortunate rendering of index selector examples",
+      "url": "https://github.com/ietf-wg-jsonpath/draft-ietf-jsonpath-base/issues/193",
+      "state": "CLOSED",
+      "author": "glyn",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [
+        "task"
+      ],
+      "body": "Some of these are split across lines in awkward places:\r\n![linefeeds](https://user-images.githubusercontent.com/94953/171098684-703fbccf-beef-41c0-893f-632d19748229.png)\r\n\r\nWe could either fix the rendering somehow to split at a more acceptable point or change the examples to avoid these awkward splits.\r\n",
+      "createdAt": "2022-05-31T05:23:31Z",
+      "updatedAt": "2022-05-31T09:42:58Z",
+      "closedAt": "2022-05-31T09:42:58Z",
+      "comments": [
+        {
+          "author": "glyn",
+          "authorAssociation": "COLLABORATOR",
+          "body": "@cabo Do you know how to fix the rendering? E.g. I think it would be better not to split the lines in the middle of a quoted string, but splitting after `]` would be ok.",
+          "createdAt": "2022-05-31T05:25:20Z",
+          "updatedAt": "2022-05-31T05:25:20Z"
+        },
+        {
+          "author": "cabo",
+          "authorAssociation": "MEMBER",
+          "body": "Please check my little tweak to #192 ",
+          "createdAt": "2022-05-31T05:47:04Z",
+          "updatedAt": "2022-05-31T05:47:04Z"
+        },
+        {
+          "author": "goessner",
+          "authorAssociation": "COLLABORATOR",
+          "body": "What if we reduce each aspect to minimal necessary ... ?\r\n\r\n```\r\n{\r\n      \"o\": {\"j j\":1, \"k.k\": 3},\r\n      \"o\": {\"j j\":1, \"k.k\": 3},\r\n      \"a\": [\"a\",\"b\"],\r\n      \"'\": {\"@\": 2}\r\n}\r\n```\r\n| Query | Result | Result Paths | Comment |\r\n| :---: | ------ | :----------: | ------- |\r\n| `$.o['j j']`   | `1` | `$['o']['j j']`      | Named value in nested object      |\r\n| `$.o[\"j j\"]`   | `1` | `$['o']['j j']`      | Named value in nested object      |\r\n| `$.o['k.k']`   | `3` | `$['o']['k.k']`      | Named value in nested object      |\r\n| `$.o[\"k.k\"]`   | `3` | `$['o']['k.k']`      | Named value in nested object      |\r\n",
+          "createdAt": "2022-05-31T07:01:04Z",
+          "updatedAt": "2022-05-31T07:01:04Z"
+        },
+        {
+          "author": "goessner",
+          "authorAssociation": "COLLABORATOR",
+          "body": "This seems to work ...\r\n```\r\n`$.o['j`&nbsp;`j']['k.k']`\r\n```",
+          "createdAt": "2022-05-31T07:24:00Z",
+          "updatedAt": "2022-05-31T07:24:00Z"
+        },
+        {
+          "author": "cabo",
+          "authorAssociation": "MEMBER",
+          "body": "This is essentially what https://github.com/ietf-wg-jsonpath/draft-ietf-jsonpath-base/pull/192/commits/bae20c2c657e01b9b17a186d73258e976cc10d44 does, except that it uses native nbsps.",
+          "createdAt": "2022-05-31T07:55:50Z",
+          "updatedAt": "2022-05-31T07:55:50Z"
+        },
+        {
+          "author": "goessner",
+          "authorAssociation": "COLLABORATOR",
+          "body": "ahh ... fine ... ",
+          "createdAt": "2022-05-31T08:08:02Z",
+          "updatedAt": "2022-05-31T08:08:02Z"
+        },
+        {
+          "author": "glyn",
+          "authorAssociation": "COLLABORATOR",
+          "body": "There are two considerations I have in mind:\r\n* Ease of future editing - may need to add a comment about invisible special characters.\r\n* Cut'n'paste - need to be able to run the examples and get the same results when clipped from either text or HTML.",
+          "createdAt": "2022-05-31T08:16:09Z",
+          "updatedAt": "2022-05-31T08:16:09Z"
+        },
+        {
+          "author": "cabo",
+          "authorAssociation": "MEMBER",
+          "body": "Left an editing note.\r\n\r\nCopy/paste works for me in TXT (which has an ASCII space) and HTML (which has an NBSP, but that gets reduced in copy/paste).",
+          "createdAt": "2022-05-31T08:34:27Z",
+          "updatedAt": "2022-05-31T08:34:27Z"
+        },
+        {
+          "author": "glyn",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Fixed as part of e82ce1f521e94ee2cd5b93d14726875e94a4a8e7.",
+          "createdAt": "2022-05-31T09:42:58Z",
+          "updatedAt": "2022-05-31T09:42:58Z"
+        }
+      ]
     }
   ],
   "pulls": [
@@ -30361,6 +30443,118 @@
           "body": "As the \"j j\" fix demonstrates, we really need to auto-check these.\r\nEyeballing-wise, this change looks good.",
           "createdAt": "2022-05-30T20:33:17Z",
           "updatedAt": "2022-05-30T20:33:17Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 192,
+      "id": "PR_kwDOEIqrgc44tu2b",
+      "title": "Editorial changes to Normalized Paths",
+      "url": "https://github.com/ietf-wg-jsonpath/draft-ietf-jsonpath-base/pull/192",
+      "state": "MERGED",
+      "author": "glyn",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [
+        "glyn"
+      ],
+      "labels": [],
+      "body": "",
+      "createdAt": "2022-05-31T05:15:30Z",
+      "updatedAt": "2022-05-31T09:41:28Z",
+      "baseRepository": "ietf-wg-jsonpath/draft-ietf-jsonpath-base",
+      "baseRefName": "main",
+      "baseRefOid": "9d7154bd154689360341ce115040a02c583cb6be",
+      "headRepository": "ietf-wg-jsonpath/draft-ietf-jsonpath-base",
+      "headRefName": "normalized-path-tweak",
+      "headRefOid": "07d77beb8c4b9dee216129b55e5e4820fc5b9fb3",
+      "closedAt": "2022-05-31T09:41:24Z",
+      "mergedAt": "2022-05-31T09:41:24Z",
+      "mergedBy": "glyn",
+      "mergeCommit": {
+        "oid": "e82ce1f521e94ee2cd5b93d14726875e94a4a8e7"
+      },
+      "comments": [
+        {
+          "author": "glyn",
+          "authorAssociation": "COLLABORATOR",
+          "body": "@cabo and @goessner Thanks for your help. I verified cut'n'past works correctly.",
+          "createdAt": "2022-05-31T09:41:19Z",
+          "updatedAt": "2022-05-31T09:41:19Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOEIqrgc46_-K-",
+          "commit": {
+            "abbreviatedOid": "7ef279a"
+          },
+          "author": "glyn",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2022-05-31T05:17:37Z",
+          "updatedAt": "2022-05-31T05:17:37Z",
+          "comments": [
+            {
+              "originalPosition": 14,
+              "body": "I would have preferred a special symbol (e.g. `\u00b1`) or unusual character (e.g. `\u00e5`), but I couldn't find one which rendered correctly in text and HTML.",
+              "createdAt": "2022-05-31T05:17:37Z",
+              "updatedAt": "2022-05-31T05:17:38Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOEIqrgc46_-UD",
+          "commit": {
+            "abbreviatedOid": "7ef279a"
+          },
+          "author": "glyn",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2022-05-31T05:18:40Z",
+          "updatedAt": "2022-05-31T05:18:41Z",
+          "comments": [
+            {
+              "originalPosition": 5,
+              "body": "`u00XX` gave the impression that the hex is in upper case, which it is not.",
+              "createdAt": "2022-05-31T05:18:40Z",
+              "updatedAt": "2022-05-31T05:18:41Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOEIqrgc47AFrU",
+          "commit": {
+            "abbreviatedOid": "7ef279a"
+          },
+          "author": "cabo",
+          "authorAssociation": "MEMBER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2022-05-31T06:06:24Z",
+          "updatedAt": "2022-05-31T06:06:25Z",
+          "comments": [
+            {
+              "originalPosition": 14,
+              "body": "See my fix (this is probably as good as it gets with RFCXMLv3)",
+              "createdAt": "2022-05-31T06:06:24Z",
+              "updatedAt": "2022-05-31T06:06:25Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOEIqrgc47BCBM",
+          "commit": {
+            "abbreviatedOid": "07d77be"
+          },
+          "author": "goessner",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2022-05-31T09:24:53Z",
+          "updatedAt": "2022-05-31T09:24:53Z",
           "comments": []
         }
       ]
