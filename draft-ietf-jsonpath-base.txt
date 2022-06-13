@@ -5,10 +5,10 @@
 JSONPath WG                                              S. Gössner, Ed.
 Internet-Draft                                   Fachhochschule Dortmund
 Intended status: Standards Track                      G. Normington, Ed.
-Expires: 2 December 2022                                                
+Expires: 15 December 2022                                               
                                                          C. Bormann, Ed.
                                                   Universität Bremen TZI
-                                                             31 May 2022
+                                                            13 June 2022
 
 
                   JSONPath: Query expressions for JSON
@@ -48,7 +48,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 2 December 2022.
+   This Internet-Draft will expire on 15 December 2022.
 
 Copyright Notice
 
@@ -547,6 +547,15 @@ Table of Contents
    *  Filter selector [?(<expr>)]
 
    *  Current item selector @ (used in expressions)
+
+   Note that processing the dot selector, string-valued index selector,
+   and filter selector all potentially require matching strings against
+   strings, with those strings coming from the JSONPath and from member
+   names and string values in the JSON to which it is being applied.
+   Two strings MUST be considered equal if and only if they are
+   identical sequences of Unicode code points.  In other words,
+   normalization operations MUST NOT be applied to either the string
+   from the JSONPath or from the JSON prior to comparison.
 
 3.5.1.  Root Selector
 
