@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2022-06-02T02:00:25.625403+00:00",
+  "timestamp": "2022-06-14T02:08:27.343698+00:00",
   "repo": "ietf-wg-jsonpath/draft-ietf-jsonpath-base",
   "labels": [
     {
@@ -30183,25 +30183,35 @@
       "id": "PR_kwDOEIqrgc421rPL",
       "title": "String matching is codepoint by codepoint, no normalization",
       "url": "https://github.com/ietf-wg-jsonpath/draft-ietf-jsonpath-base/pull/187",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "timbray",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "Per discussion at recent interim.",
       "createdAt": "2022-04-27T01:25:19Z",
-      "updatedAt": "2022-05-30T10:15:37Z",
+      "updatedAt": "2022-06-13T17:29:59Z",
       "baseRepository": "ietf-wg-jsonpath/draft-ietf-jsonpath-base",
       "baseRefName": "main",
-      "baseRefOid": "6e11a51a8ed8426653ab4160f79a5c6a2b6c9e9f",
+      "baseRefOid": "e82ce1f521e94ee2cd5b93d14726875e94a4a8e7",
       "headRepository": "timbray/draft-ietf-jsonpath-base",
       "headRefName": "main",
-      "headRefOid": "0da60a2c094b7aa415c47b112de02dbafec87ec8",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
-      "comments": [],
+      "headRefOid": "2ba5475aa32178b7e1685cae2797ea6b3a353943",
+      "closedAt": "2022-06-13T17:29:59Z",
+      "mergedAt": "2022-06-13T17:29:59Z",
+      "mergedBy": "glyn",
+      "mergeCommit": {
+        "oid": "822fd6d3d5d55d1ae1637498b28df086ee9f9c72"
+      },
+      "comments": [
+        {
+          "author": "timbray",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Oops yes thanks done.\n\nOn Mon, Jun 13, 2022 at 9:26 AM cabo ***@***.***> wrote:\n\n> ***@***.**** commented on this pull request.\n> ------------------------------\n>\n> In draft-ietf-jsonpath-base.md\n> <https://github.com/ietf-wg-jsonpath/draft-ietf-jsonpath-base/pull/187#discussion_r895913956>\n> :\n>\n> > @@ -555,6 +555,14 @@ A JSONPath query consists of a sequence of selectors. Valid selectors are\n>    * Filter selector `[?(<expr>)]`\n>    * Current item selector `@` (used in expressions)\n>\n> +Note that processing the dot selector and string-valued index selectors\n>\n> Will update the PR\n>\n> Time for that update, I'd say...\n>\n> \u2014\n> Reply to this email directly, view it on GitHub\n> <https://github.com/ietf-wg-jsonpath/draft-ietf-jsonpath-base/pull/187#discussion_r895913956>,\n> or unsubscribe\n> <https://github.com/notifications/unsubscribe-auth/AAAEJE622QL2ZV72GNGUKKLVO5OK3ANCNFSM5UNRV2ZA>\n> .\n> You are receiving this because you were mentioned.Message ID:\n> <ietf-wg-jsonpath/draft-ietf-jsonpath-base/pull/187/review/1004619898@\n> github.com>\n>\n",
+          "createdAt": "2022-06-13T17:18:23Z",
+          "updatedAt": "2022-06-13T17:18:23Z"
+        }
+      ],
       "reviews": [
         {
           "id": "PRR_kwDOEIqrgc444ZQU",
@@ -30386,6 +30396,39 @@
           "body": "Filter comparisons need to be included.\r\n\r\n@timbray ok?",
           "createdAt": "2022-05-30T10:15:37Z",
           "updatedAt": "2022-05-30T10:15:37Z",
+          "comments": []
+        },
+        {
+          "id": "PRR_kwDOEIqrgc474Uh6",
+          "commit": {
+            "abbreviatedOid": "0da60a2"
+          },
+          "author": "cabo",
+          "authorAssociation": "MEMBER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2022-06-13T16:26:09Z",
+          "updatedAt": "2022-06-13T16:26:09Z",
+          "comments": [
+            {
+              "originalPosition": 4,
+              "body": "\r\n> Will update the PR\r\n\r\nTime for that update, I'd say...\r\n",
+              "createdAt": "2022-06-13T16:26:09Z",
+              "updatedAt": "2022-06-13T16:26:09Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOEIqrgc474mzp",
+          "commit": {
+            "abbreviatedOid": "2ba5475"
+          },
+          "author": "glyn",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2022-06-13T17:29:47Z",
+          "updatedAt": "2022-06-13T17:29:47Z",
           "comments": []
         }
       ]
