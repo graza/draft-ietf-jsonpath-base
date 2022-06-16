@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2022-06-14T02:08:27.343698+00:00",
+  "timestamp": "2022-06-16T01:55:54.752422+00:00",
   "repo": "ietf-wg-jsonpath/draft-ietf-jsonpath-base",
   "labels": [
     {
@@ -92,6 +92,11 @@
       "name": "list-discussion-needed",
       "description": "",
       "color": "b60205"
+    },
+    {
+      "name": "extension",
+      "description": "",
+      "color": "E95080"
     }
   ],
   "issues": [
@@ -1085,12 +1090,13 @@
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [
+        "editorial",
         "processing-model",
         "overtaken by events -- can we close this now?"
       ],
       "body": "Each selector may each return multiple nodes, or even the same node multiple times.  This raises the question of whether (and if so, how) the resulting collection of nodes needs to be distinct, i.e. without duplicates.\r\n\r\nAn example:\r\n\r\n```\r\nJSON instance:\r\n{\r\n  \"a\": [\r\n    \"string\",\r\n    null,\r\n    true\r\n  ],\r\n  \"b\": [\r\n    false,\r\n    \"string\",\r\n    5.4\r\n  ]\r\n}\r\n\r\nPath:\r\n$.*[0,1]\r\n```\r\n\r\nThe raw result set of this selector is `[\"string\", null, false, \"string\"]`.  If we say that we expect only the distinct set of nodes, then the results would be `[\"string\", null, false]`, removing the duplicate `\"string\"`.\r\n\r\nSo the question up for discussion is, \"Should selectors return distinct sets of nodes or are duplicates preferred?\"\r\n\r\n---\r\n\r\nI had been considering a location-based distinction (based on the location of the value in the original JSON structure) as a possibility, but I don't think it makes much sense given the definition of a selector in Section 2.5, taking multiple nodes and outputing multiple nodes.  A selector knows nothing about the original JSON structure that is being evaluated.\r\n\r\nHowever for posterity, consider the following (rather contrived) path evaluated against the above instance:\r\n\r\n```\r\n$.*[0,:5]\r\n```\r\n\r\nIn this case, the `\"string\"` value which is the first element of the `a` property would be selected twice, and the `\"string\"` value in the second element of the `b` property would be selected once, resulting in three `\"string\"` values in the results.  For location-based distinction, only the value from `a` would be considered duplicate, leaving two instances of `\"string\"` in the result set.\r\n\r\nAgain, I *don't* think that this is a viable approach due to how a selector works and the information it's given.  However, if we were to also require [location as part of the output](https://github.com/cburgmer/json-path-comparison/issues/29), then this *would* be a viable solution.",
       "createdAt": "2020-09-25T05:59:57Z",
-      "updatedAt": "2022-01-17T23:33:19Z",
+      "updatedAt": "2022-06-14T09:06:38Z",
       "closedAt": null,
       "comments": [
         {
@@ -2005,11 +2011,12 @@
       "authorAssociation": "NONE",
       "assignees": [],
       "labels": [
-        "help wanted"
+        "help wanted",
+        "revisit-after-base-done"
       ],
       "body": "In the [W3C Web of Things](https://www.w3.org/WoT/), we have been working on a new standard for Discovery (which looks up metadata about IoT devices encoded in JSON-LD files) that includes JSON Path as one query mechanism.  We are therefore very happy to see this effort to standardize JSON Path, as it will make it much much easier to reference (and keep consistent) in a W3C Recommendation (our alternative would be to make up our own JSON Path spec, which we obviously want to avoid at all costs).   For general information on WoT Discovery, please see the [w3c/wot-discovery repo](https://github.com/w3c/wot-discovery) and in particular the [Editor's Draft](https://w3c.github.io/wot-discovery) of our spec.  I should mention we also plan to support XPath and SPARQL as optional alternative query languages but would like to make JSON Path the basic requirement for all implementations.\r\n\r\nWe will likely follow up with other issues later related to the use of JSON Path WoT Discovery more generally later; however lately we have also been discussing geolocation and the use of JSON Pointers to define the location of this information in order to deal with various use cases like devices installed in a static location, devices using other devices for their location, devices with dynamic updates of location (vehicles, etc).  Ultimately we would like to have a set of \"geolocation filters\" in WoT Discovery that lets us filter query results by location.  These can be independent of JSON Path; however, we first have to collect the geolocation information together with a JSON Path query, and that (at least) requires the following:\r\n\r\n* The ability to follow \"relative\" JSON pointers (i.e. URLS with just the fragment part) within a document and collect the information.\r\n\r\nSee my [geolocation proposal](https://github.com/mmccool/wot-discovery/blob/geolocation-proposal/proposals/geolocation.md) for a writeup and some examples.   Note there are ALSO examples of JSON pointers referring to data schemas and to external files in that proposal, both of which would require an additional dereferencing step, and it would be OK to NOT support these in JSON Path (or rather, leave it up to the consumer to follow these external references themselves, so unresolved JSON Pointers could be included in the result in these cases).\r\n\r\nIf the above is confusing, I apologize, but let's discuss and hopefully I can clarify.",
       "createdAt": "2021-03-03T17:46:04Z",
-      "updatedAt": "2022-01-17T23:18:47Z",
+      "updatedAt": "2022-06-14T09:04:29Z",
       "closedAt": null,
       "comments": [
         {
@@ -5565,7 +5572,7 @@
       "id": "MDU6SXNzdWU5ODI4OTk1NzY=",
       "title": "String normalization",
       "url": "https://github.com/ietf-wg-jsonpath/draft-ietf-jsonpath-base/issues/117",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "cburgmer",
       "authorAssociation": "NONE",
       "assignees": [
@@ -5576,8 +5583,8 @@
       ],
       "body": "When looking up object member names (dot selector or index selector) normalization of strings becomes an issue. See https://en.wikipedia.org/wiki/Unicode_equivalence#Normalization for an introduction on normalization in Unicode. \r\n\r\nAs indicated with one test in the comparison project (https://cburgmer.github.io/json-path-comparison/#bracket_notation_with_NFC_path_on_NFD_key) it seems though that there is consensus not to respect equivalent code points. The Raku implementation is the only one that matches the equivalent key, which seems to stem from the Raku runtime already normalizing strings upfront (if my manual tests are to be believed).\r\n\r\nIs this something we want to prescribe in a standard, or would we end up with advice possibly contradicting the implementation of JSON parsers? (A quick search turned up http://seriot.ch/parsing_json.php which complains about different implementation in parsers with respect to string normalization.)",
       "createdAt": "2021-08-30T15:08:46Z",
-      "updatedAt": "2022-04-22T21:17:29Z",
-      "closedAt": null,
+      "updatedAt": "2022-06-14T18:13:52Z",
+      "closedAt": "2022-06-14T18:13:51Z",
       "comments": [
         {
           "author": "gregsdennis",
@@ -5662,6 +5669,13 @@
           "body": "I think, however, that there should be a note in the text (if there isn't already, haven't checked) making it explicit that implementations MUST NOT normalize before comparing member names and string values. ",
           "createdAt": "2022-04-22T21:17:29Z",
           "updatedAt": "2022-04-22T21:17:29Z"
+        },
+        {
+          "author": "timbray",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Fixed in in 822fd6d3d5d55d1ae1637498b28df086ee9f9c72",
+          "createdAt": "2022-06-14T18:13:51Z",
+          "updatedAt": "2022-06-14T18:13:51Z"
         }
       ]
     },
@@ -6247,11 +6261,11 @@
       "authorAssociation": "MEMBER",
       "assignees": [],
       "labels": [
-        "list-discussion-needed"
+        "editorial"
       ],
       "body": "If yes,\r\n\r\n`@.doesnotexist != @.alsodoesnotexist` \r\n\r\nis false.\r\n\r\nNeed to discuss impact on >, >=, etc.\r\n\r\nSee also:\r\nhttps://notes.ietf.org/notes-ietf-interim-2021-jsonpath-03-jsonpath",
       "createdAt": "2021-09-17T10:26:28Z",
-      "updatedAt": "2022-01-26T14:37:05Z",
+      "updatedAt": "2022-06-14T09:02:02Z",
       "closedAt": null,
       "comments": [
         {
@@ -6435,6 +6449,13 @@
           "body": "> > In most prior experience that I know of in JSONPath implementations,\r\n> \r\n> I wasn't talking about implementations, but about the processing model we have adopted.\r\n\r\nInteresting.\r\n\r\nSo, given\r\n```\r\n[{\"foo\":\"bar\"}]\r\n\r\n$[?(@.foo == 'bar')]\r\n```\r\n\r\nIf `@.foo` resolves to a \"result list\", `['bar']`, how is the result list containing `bar` compared to the single value `bar`? What convention are you following to support comparison between a \"result list\" and a single value? I apologize if I missed that in the draft.\r\n\r\nIn all the prior experience that I'm familiar with, `@.foo` always evaluates to a single value according to rules. That's true of both implementations that treat `@` as a Javascript like variable, much in fact like it is in the draft,\r\n\r\n```\r\nrel-path     = \"@\" *(S (dot-selector / index-selector))\r\n```\r\nand in implementations where the grammar of `@.<expr>` is the same as `$.<expr>`. (For these implementations, `@.<expr>` is always evaluated to a single value following rules that may differ from evaluating `$.<expr>` to a result list.)\r\n\r\nSo your approach sounds like something different.\r\n\r\nThanks,\r\nDaniel\r\n  ",
           "createdAt": "2022-01-26T14:34:52Z",
           "updatedAt": "2022-01-26T14:37:05Z"
+        },
+        {
+          "author": "timbray",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "We have rough consensus that absent does equal absent. Tagged as editorial.",
+          "createdAt": "2022-06-14T09:02:02Z",
+          "updatedAt": "2022-06-14T09:02:02Z"
         }
       ]
     },
@@ -6853,10 +6874,12 @@
       "author": "glyn",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
-      "labels": [],
+      "labels": [
+        "revisit-after-base-done"
+      ],
       "body": "This approach was agreed at the [January 2022 interim WG meeting](https://datatracker.ietf.org/meeting/interim-2022-jsonpath-01/materials/minutes-interim-2022-jsonpath-01-202201181100-00).\r\n\r\n[These](https://github.com/ietf-wg-jsonpath/draft-ietf-jsonpath-base/issues?q=is%3Aissue+is%3Aclosed+label%3Arevisit-after-base-done) are those issues.",
       "createdAt": "2022-02-01T10:50:31Z",
-      "updatedAt": "2022-02-01T10:50:31Z",
+      "updatedAt": "2022-06-14T09:03:05Z",
       "closedAt": null,
       "comments": []
     },
@@ -6869,10 +6892,12 @@
       "author": "gregsdennis",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
-      "labels": [],
+      "labels": [
+        "extension"
+      ],
       "body": "Ref: https://github.com/ietf-wg-jsonpath/draft-ietf-jsonpath-base/pull/153#issuecomment-1027657135\r\n\r\nThe original post shows examples of a `.length` syntax that allows the user to get the number of elements in an array.  This was primarily used in the `[(<expr>)]` syntax such as `[(@.length-1)]` as a way to denote the last element in an array.  For now, we have elected to exclude this syntax.\r\n\r\nThe `.length` syntax can also be used in the `[?(<expr>)]` syntax such as `[?(@.length<10)]` to find array elements which are objects or arrays which themselves have fewer than 10 keys/items.\r\n\r\nHowever, there is an ambiguity between `length` as a property of an array and `length` as an object key.  **We need to address this ambiguity.**\r\n\r\nAs of opening this issue, the syntax is disallowed, implying it can only have the \"object key\" semantics.  But since the vast majority of implementation support this ([object](https://cburgmer.github.io/json-path-comparison/results/dot_notation_with_key_named_length.html) / [array](https://cburgmer.github.io/json-path-comparison/results/dot_notation_with_key_named_length_on_array.html)), it can be inferred that path authors use this feature.  Therefore, we need to support this feature in some way.\r\n\r\nDue to the ambiguity stated above, I think we need an alternate syntax.  To start, I would like to propose the function syntax `length(@)` which would return the number of items in an object/array or 0 for non-structured values.\r\n\r\nIt is recognized that we don't yet have a function syntax defined, so maybe that needs to be addressed first.  I'm also open to other proposals that wouldn't require that we define a new class of syntax.",
       "createdAt": "2022-02-02T08:23:21Z",
-      "updatedAt": "2022-03-04T19:05:49Z",
+      "updatedAt": "2022-06-14T08:59:58Z",
       "closedAt": null,
       "comments": [
         {
@@ -7277,15 +7302,17 @@
       "id": "I_kwDOEIqrgc5D-sxs",
       "title": "Addressing object keys",
       "url": "https://github.com/ietf-wg-jsonpath/draft-ietf-jsonpath-base/issues/156",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "benkehoe",
       "authorAssociation": "NONE",
       "assignees": [],
-      "labels": [],
+      "labels": [
+        "enhancement"
+      ],
       "body": "Please excuse me if this has been fully covered; I've been reading over the history of #109, [the minutes where it was discussed](https://datatracker.ietf.org/doc/minutes-112-jsonpath/), and messages in the [mailing list](https://mailarchive.ietf.org/arch/msg/jsonpath/MT_WROl1XpUWYOGy69HMAR2DVVI/) and I'm not sure this specific question has been asked.\r\n\r\nThere has been discussion of how object keys might be referenced in a filter selector (e.g., with an `index()` function), which it seems like has been settled as out of scope. A different question, to my mind, is \"Can a JSON Path address an object key?\"\u2014has this been asked? Is an object key a node? The spec says:\r\n\r\n> For the purposes of this specification, a value as defined by RFC8259 is also viewed as a tree of nodes.  Each node, in turn, holds a value.  Further nodes within each value are the elements of arrays and the member values of objects and are themselves values. (The type of the value held by a node may also be referred to as the type of the node.)\r\n\r\nThis does seem to scope nodes only to values. The closest thing I could find to someone asking my question is [this message](https://mailarchive.ietf.org/arch/msg/jsonpath/iIej1cnzEoHkjKgBO41ZXOXhUWI/) which mentions key-value pairs, and has no further discussion. It seems a little strange to me that as general-purpose as JSON Path is, it does not provide for addressing all elements of a JSON document.\r\n\r\nOne possible answer to this is, \"an implementation may make the object key available as a property of a node in the nodelist it returns for a path\". This would suffice for a user processing a JSON document and needing to extract this information, but that's separate from being able to reference that key as a first-class element within the document, for example when an interface accepts a JSON pointer as input for some action it will take on the pointed-to element.\r\n\r\nAnother possible answer, to my mind, would be something like an \"index name selector\". For the sake of argument, say this took the form of `#index` (setting aside choice of separator, etc), and the path definition was something like \r\n```abnf\r\njson-path = root-selector *(S primary-selector) [ S primary-selector S \"#index\" ] ; the root can't have an index name\r\n                                                                                  ; no further selectors can be applied after it\r\nprimary-selector = (dot-selector        /\r\n                    dot-wild-selector   /\r\n                    index-selector      /\r\n                    index-wild-selector /\r\n                    list-selector       /\r\n                    slice-selector      /\r\n                    descendant-selector /\r\n                    filter-selector)\r\n```\r\nThe index name selector would be defined to produce a string node whose value is the object key or array index when applied to a node in an object or array, or no node otherwise. With something like this, it would allow a user to definitively reference object keys (and array indexes) with a JSON Path. And it would additionally allow object keys to be referenced in filter selectors without a separate syntax, which would address a number of the concerns I saw surrounding that.\r\n\r\nAs I said, this may have been thought about and decided upon already, but as I couldn't find it after some digging, I thought I would pose the question for consideration.",
       "createdAt": "2022-02-16T20:15:30Z",
-      "updatedAt": "2022-02-28T17:59:23Z",
-      "closedAt": null,
+      "updatedAt": "2022-06-14T08:59:35Z",
+      "closedAt": "2022-06-14T08:59:34Z",
       "comments": [
         {
           "author": "nichtich",
@@ -7300,6 +7327,13 @@
           "body": "That is slightly different. For the document `{\"key\": \"value\"}`, I would expect `$[?index == \"key\"]` to resolve to `\"value\"`. The question I have is, could there be a JSON Path that would resolve, for that document, to `\"key\"`? The strawman proposal above would say that appending `#index` onto a path would return the index of the node(s) that are returned by the path. It's not very interesting for that example, where `$[?index == \"key\"]#index` would return `\"key\"`; a more interesting case would be `$[?@ == \"value\"]#index` would return `\"key\"`",
           "createdAt": "2022-02-28T17:57:11Z",
           "updatedAt": "2022-02-28T17:59:23Z"
+        },
+        {
+          "author": "timbray",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "This is a real problem with JSONPath and for the moment we don't have a solution.  Closing for now.",
+          "createdAt": "2022-06-14T08:59:34Z",
+          "updatedAt": "2022-06-14T08:59:34Z"
         }
       ]
     },
@@ -7308,15 +7342,15 @@
       "id": "I_kwDOEIqrgc5D_Rsz",
       "title": "Declarations of objects in JSONPath",
       "url": "https://github.com/ietf-wg-jsonpath/draft-ietf-jsonpath-base/issues/157",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "spyzhov",
       "authorAssociation": "NONE",
       "assignees": [],
       "labels": [],
       "body": "Hello! \r\n\r\nI stuck with one decision: how to evaluate `object` declarations in the `JSONPath`?\r\n\r\nSo, as an example let's take JSONPath:\r\n\r\n```\r\n$..[?(@.foo == {\"foo\": @.bar})]\r\n```\r\n\r\nHere we can see `object` declaration: `{\"foo\": @.bar}`.\r\n\r\nFollowing the rules, request `@.bar` gives a list of elements as the result.\r\n\r\nIf `@.bar` gives several items in response, there is no problem (except for the order).\r\n\r\nThe problem is: when request `@.bar` gives only one element in response or no results ever.\r\n\r\nQuestions that I stuck with:\r\n\r\n1. If there are no responses, should we avoid this comparison, or use `null` as the result?\r\n    ```\r\n    {\"foo\": @.bar} -> {\"foo\": null}\r\n    ```\r\n2. If there is only value in the response, should we avoid cast to array in this case?\r\n    ```\r\n    {\"foo\": @.bar} -> {\"foo\": \"bar\"} or {\"foo\": [\"bar\"]} ?\r\n    ```\r\n\r\nWho is ready to discuss it?",
       "createdAt": "2022-02-16T22:39:01Z",
-      "updatedAt": "2022-02-17T21:12:31Z",
-      "closedAt": null,
+      "updatedAt": "2022-06-14T08:58:12Z",
+      "closedAt": "2022-06-14T08:58:12Z",
       "comments": [
         {
           "author": "cabo",
@@ -7380,6 +7414,13 @@
           "body": "> Creating `ajson` library, I thought about the possibility to get atomic values from the whole payload and modify only them. But today I'd like to wide this possibility to be able to **create** values through request. To be able to use a scripting language from the JSONPath to create new payloads, like this:\r\n> \r\n> ```go\r\n> ajson.JSONPath(`!({\r\n>   \"foo\": $..foo,\r\n>   \"bar\": {$..bar: $..baz}\r\n> })`, data)\r\n> ```\r\nIt's hard to see that capability coming to JSONPath, as JSONPath is generally seen as a language for selecting values from a JSON document, and not for transforming JSON.\r\n\r\nThere are other query languages that support transformation. You can do this in [JMESPath](https://jmespath.org/specification.html), a query language with support in both the AWS and Azure CLI, and libraries available in a number of languages. In JMESPath, the query\r\n```\r\n{\"foo\": baz.biz[2].foo, \"bar\": foo}\r\n```\r\napplied to the document\r\n```json\r\n{\r\n  \"foo\": \"bar\",\r\n  \"baz\": {\r\n    \"bar\": {\"biz\": \"bar\"},\r\n    \"biz\": [null, \"foo\", {\"foo\": \"bar\"}]\r\n  }\r\n}\r\n```\r\ngives the result\r\n```\r\n{\r\n  \"foo\": \"bar\",\r\n  \"bar\": \"bar\"\r\n}\r\n```\r\n\r\nYou can also do it in [JSONiq](https://www.jsoniq.org/), an ISO/IEC approved, OASIS standard. JSONiq was largely incorporated into XQuery 3.1, in a way that integrates the XML and JSON data models. The big vendors have mostly moved to XQuery for querying and transforming data, whether XML or JSON, IBM WebSphere still uses an older version of JSONiq.  It's difficult to see a role for JSONPath here.",
           "createdAt": "2022-02-17T20:32:05Z",
           "updatedAt": "2022-02-17T21:12:31Z"
+        },
+        {
+          "author": "timbray",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Useful discussion, thanks.",
+          "createdAt": "2022-06-14T08:58:12Z",
+          "updatedAt": "2022-06-14T08:58:12Z"
         }
       ]
     },
@@ -7388,7 +7429,7 @@
       "id": "I_kwDOEIqrgc5EeVOY",
       "title": "ANBF for individual selectors shouldn't include brackets",
       "url": "https://github.com/ietf-wg-jsonpath/draft-ietf-jsonpath-base/issues/159",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "gregsdennis",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
@@ -7397,8 +7438,8 @@
       ],
       "body": "The ANBF for the `index-selector` in section 3.5.4 includes the square brackets:\r\n\r\n```\r\nindex-selector      = \"[\" S (quoted-member-name / element-index) S \"]\"\r\n```\r\n\r\nDoesn't this preclude the ability to comma-separate multiple indices, e.g. `[1,2,3]`?\r\n\r\n(this probably applies to others as well)",
       "createdAt": "2022-02-24T02:57:27Z",
-      "updatedAt": "2022-03-07T13:49:50Z",
-      "closedAt": null,
+      "updatedAt": "2022-06-14T08:43:06Z",
+      "closedAt": "2022-06-14T08:42:45Z",
       "comments": [
         {
           "author": "glyn",
@@ -7406,6 +7447,13 @@
           "body": "I think the missing syntax is supplied by:\r\n```\r\nlist-selector  = \"[\" S list-entry 1*(S \",\" S list-entry) S \"]\"\r\n\r\nlist-entry     =  ( quoted-member-name /\r\n                    element-index      /\r\n                    slice-index\r\n                  )\r\n```",
           "createdAt": "2022-02-24T08:37:29Z",
           "updatedAt": "2022-02-24T08:37:29Z"
+        },
+        {
+          "author": "fiestajetsam",
+          "authorAssociation": "MEMBER",
+          "body": "Closing this as agreed with the folks at the June interim. Please comment if you think this needs to be revisited.",
+          "createdAt": "2022-06-14T08:42:45Z",
+          "updatedAt": "2022-06-14T08:43:06Z"
         }
       ]
     },
@@ -7418,10 +7466,13 @@
       "author": "yangbodong22011",
       "authorAssociation": "NONE",
       "assignees": [],
-      "labels": [],
+      "labels": [
+        "enhancement",
+        "extension"
+      ],
       "body": "Functions can be invoked at the tail end of a path - the input to a function is the output of the path expression. The function output is dictated by the function itself.\r\n\r\nRefer\uff1ahttps://github.com/json-path/JsonPath#functions",
       "createdAt": "2022-02-24T07:14:12Z",
-      "updatedAt": "2022-04-27T03:06:12Z",
+      "updatedAt": "2022-06-14T08:56:48Z",
       "closedAt": null,
       "comments": [
         {
@@ -7486,6 +7537,13 @@
           "body": "> Similarly, the index() function could be defined to have the context of the iterator in which it runs, i.e. the filter query [?()].\r\n\r\nOkay, I've changed my mind about that, and agree. It's analogous to the XPath `fn:position()` function. I think you'd want separate functions for returning the index for an array and the name for an object member, though.  ",
           "createdAt": "2022-04-27T03:06:12Z",
           "updatedAt": "2022-04-27T03:06:12Z"
+        },
+        {
+          "author": "timbray",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "We have a proposal incoming on JSONPath extension points and this issue is useful as input to that. ",
+          "createdAt": "2022-06-14T08:55:38Z",
+          "updatedAt": "2022-06-14T08:55:38Z"
         }
       ]
     },
@@ -7494,15 +7552,15 @@
       "id": "I_kwDOEIqrgc5EjtJL",
       "title": "Mention SQL/JSON Path Expression",
       "url": "https://github.com/ietf-wg-jsonpath/draft-ietf-jsonpath-base/issues/161",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "nichtich",
       "authorAssociation": "NONE",
       "assignees": [],
       "labels": [],
       "body": "**SQL/JSON Path Expression** (as specified in [SQL ISO standard](https://www.iso.org/standard/78937.html)) was heavily inspired by JSONPath, overlaps in both syntax and semantics and has a similar name. I'm sure there is a common subset of both languages, but finding out the exact edge cases and differences would be an unreasonable demand. Anyway, this is and will be source of confusion and subtle bugs in applications that wrongly assume to know which JSON query language they are using.\r\n\r\nThe JSONPath RFC should at least mention ISO SQL/JSON Path Expression to make clear that its not the same and incompatibilities should be expected when using JSON Path Expressions as JSONPath or the reverse.",
       "createdAt": "2022-02-25T09:09:11Z",
-      "updatedAt": "2022-03-03T08:35:35Z",
-      "closedAt": null,
+      "updatedAt": "2022-06-14T08:55:04Z",
+      "closedAt": "2022-06-14T08:55:04Z",
       "comments": [
         {
           "author": "glyn",
@@ -7538,6 +7596,13 @@
           "body": "I think a simple sentence would be enough, for instance\r\n\r\n> JSONPath partly shares syntax and semantics with SQL/JSON Path Language (ISO/IEC 19075-6:2021) but differs in substantial parts.\r\n\r\nor\r\n\r\n> JSONPath was inspired by XPath and inspired other query languages such as SQL/JSON Path Language.\r\n\r\nThe influence of JSONPath to SQL/JSON Path Language is undeniable.",
           "createdAt": "2022-03-03T08:35:35Z",
           "updatedAt": "2022-03-03T08:35:35Z"
+        },
+        {
+          "author": "cabo",
+          "authorAssociation": "MEMBER",
+          "body": "There are a lot of languages that have been inspired by JSONPath.  We don't really want to do an extensive survey here.  Agreed at 2022-06-14 interim.",
+          "createdAt": "2022-06-14T08:55:04Z",
+          "updatedAt": "2022-06-14T08:55:04Z"
         }
       ]
     },
@@ -7550,10 +7615,12 @@
       "author": "nichtich",
       "authorAssociation": "NONE",
       "assignees": [],
-      "labels": [],
+      "labels": [
+        "editorial"
+      ],
       "body": "The grammar includes `\"@\"` only it at `rel-path` rule in filter expressions. `rel-path` is only used in rule `path`:\r\n\r\n    path         = rel-path / json-path\r\n    rel-path     = \"@\" *(S (dot-selector / index-selector))\r\n\r\nAs `json-path` always starts with `$`, a parser does not need the `\"@\"` to distinguish between `rel-path` and `json-path`, so the character can be made optional, helping JSONPath expressions look less like obfuscated Per (SCNR).\r\n\r\nExample:\r\n\r\n    $[? @.key>42 && @.key<44 ]\r\n    $[?  .key>42 &&  .key<44 ]\r\n\r\nThe latter is more readable, isn't it?",
       "createdAt": "2022-02-28T12:23:43Z",
-      "updatedAt": "2022-02-28T21:06:25Z",
+      "updatedAt": "2022-06-14T08:52:43Z",
       "closedAt": null,
       "comments": [
         {
@@ -7576,6 +7643,13 @@
           "body": "> what's the difference between `@.foo` and `.foo`? \r\n\r\nI don't know of prior experience with bare expressions that omit only the \"current node\" symbol, but not the dot. But there is plenty outside of JSONPath for omitting _both_ the \"current node\" symbol and the dot - see [The \"current value\" or \"current node\", and the meaning thereof](https://github.com/ietf-wg-jsonpath/draft-ietf-jsonpath-base/issues/76). That's the case for JMESPath and XPath. SQL also permits omitting qualifying table names or aliases when there is no ambiguity.\r\n\r\nAllowing `foo` in place of `@.foo` does mean that unquoted names should not be allowed to start with a digit, otherwise expressions like `$foo[?(2 == 4)]` would be ambiguous. There is some data about that [here](https://cburgmer.github.io/json-path-comparison/results/filter_expression_with_dot_notation_with_number.html), a minority of JSONPath implementations do allow unquoted names that start with a digit, as did earlier versions of the draft. But it looks like recent versions of the draft do not, so could accommodate your proposal.\r\n\r\n> Why is `$.foo` allowed at the root but not `@.foo`?\r\n\r\nThat's a good question. There was a [proposal by Davide Bettio](https://github.com/ietf-wg-jsonpath/draft-ietf-jsonpath-base/issues/59) to support `@.foo` at the root, and it was discussed at the [May 2021 ietf meeting](https://datatracker.ietf.org/doc/minutes-interim-2021-jsonpath-01-202105110900/). The proposal was dismissed with the \"consensus\" that \"Queries should not begin with @, but this is a natural extension point.\"\r\n\r\nIt's not obvious from reading the minutes that the committee fully understood that not accomodating JSONPath expressions beginning with `@` was tantamount to asserting that expressions in filters beginning with `@` were not JSONPath expressions (unfortunately Bettio was not present to defend the proposal.) In any case, it's clear in the draft that they are not, the draft defines them as\r\n```\r\nrel-path     = \"@\" *(S (dot-selector / index-selector))\r\n```\r\n\r\nIn terms of prior experience, implementations (at least the important ones) group into two categories.\r\n\r\n(1) Implementations including original JavaScript Goessner that use JavaScript (or Python or PHP) for evaluating JSONPath filter expressions. In these scripts, `@` is substituted with the \"current value\", and expressions consisting of the \"current value\" followed by a dot or a left square bracket are evaluated according to JavaScript (or Python or PHP) rules. This always result in a single value. \r\n\r\n(2) JSONPath implementations that make up their own expression languages.  The important ones (Java Jayway, JSON.Net), regard expressions starting with `@` as JSONPath expressions in their own right, and evaluate them as such. They specify rules for evaluating them as a single value (rather than a list of values) so that evaluations and JSON literals can be meaningfully compared.\r\n\r\nThe draft authors chose to follow the second group by inventing their own expression language, but the first group by making expressions beginning with `@` somewhat analogous to evaluating JavaScript variables with index and identifier operators. It's unclear to me why they made that choice. I think it would be helpful if they included some notes in the draft to motivate their decisions in terms of prior experience.\r\n",
           "createdAt": "2022-02-28T16:41:12Z",
           "updatedAt": "2022-02-28T21:06:25Z"
+        },
+        {
+          "author": "timbray",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "This is treated as editorial input and we'll ask our editors to consider providing such a rationale.",
+          "createdAt": "2022-06-14T08:52:43Z",
+          "updatedAt": "2022-06-14T08:52:43Z"
         }
       ]
     },
@@ -7676,15 +7750,18 @@
       "id": "I_kwDOEIqrgc5F04gJ",
       "title": "Proposal: Value type-checks",
       "url": "https://github.com/ietf-wg-jsonpath/draft-ietf-jsonpath-base/issues/172",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "gregsdennis",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
-      "labels": [],
+      "labels": [
+        "enhancement",
+        "revisit-after-base-done"
+      ],
       "body": "***NOTE** I definitely think support for this proposal should **not** be part of the initial release but should be considered for follow-up releases.  I had the idea and wanted to document it.*\r\n\r\n## Scenario\r\n\r\nGiven the following JSON\r\n\r\n```json\r\n[\r\n  \"foo\",\r\n  5,\r\n  { \"bar\": null },\r\n  \"baz\",\r\n  null\r\n]\r\n```\r\n\r\nthere is no way to isolate only string values.\r\n\r\n## Proposal\r\n\r\nTo address this, we should introduce a type check.\r\n\r\nI would like to propose the `is` operator for JSON Path expressions in the filter selector `[?()]`.  Examples of usage would be:\r\n\r\n```\r\n@ is boolean\r\n@ is string\r\n@ is number\r\n@.foo is object\r\n```\r\n\r\nTo support this, we would need to reserve `object`, `array`, `boolean`, `number`, `null`, and `string` as reserved keywords in expressions, meaning that functions could not bear these names.  I don't think that this would cause any problems.\r\n\r\nIt could also support value coercion on the RHS.  For example `@ is $.foo`, could return `true` if `$.foo` is a string containing one of these type keywords.\r\n\r\n## A sub-par alternative\r\n\r\nI had also considered a `type(x)` function to build on [my proposal for functions](https://github.com/ietf-wg-jsonpath/draft-ietf-jsonpath-base/issues/160#issuecomment-1069549608).\r\n\r\nThe `type(x)` function would take a single parameter and return... well that's the problem.  What would it return?  It can't rightly return a string.  It would have to return some implementation-internal concept of a \"value type\", and then we'd have to add support for equality.\r\n\r\n`type(@) == object` and `type(@) == \"object\"` just don't feel right.\r\n\r\nI think the `is` operator is the way to go for this feature.",
       "createdAt": "2022-03-16T20:02:27Z",
-      "updatedAt": "2022-03-29T19:21:30Z",
-      "closedAt": null,
+      "updatedAt": "2022-06-14T19:58:20Z",
+      "closedAt": "2022-06-14T08:49:31Z",
       "comments": [
         {
           "author": "cabo",
@@ -7699,6 +7776,27 @@
           "body": "> A function syntax would have the advantage that it could use an extension point, while new syntax such as \" is \" always would lead to harder to manage syntax errors.\n\n\nI'm not sure why `is` would be any harder to parse than any other equivalence operator, e.g. `==` or `!=`.\n\nAnd again, what would a function return?  How would you test that a value is, for example, an array?",
           "createdAt": "2022-03-29T19:21:30Z",
           "updatedAt": "2022-03-29T19:21:30Z"
+        },
+        {
+          "author": "timbray",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Captured as a request for enhancement.",
+          "createdAt": "2022-06-14T08:49:31Z",
+          "updatedAt": "2022-06-14T08:49:31Z"
+        },
+        {
+          "author": "gregsdennis",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Where was this captured? Isn't that the point of this issue? Why close it?  It should be marked as an enhancement (done) and left open until added or we've decided we're not going to do it.",
+          "createdAt": "2022-06-14T19:55:41Z",
+          "updatedAt": "2022-06-14T19:55:41Z"
+        },
+        {
+          "author": "cabo",
+          "authorAssociation": "MEMBER",
+          "body": "Actually, it should be labeled \"revisit-after-base-done\", which I just did.  Thanks for catching this.",
+          "createdAt": "2022-06-14T19:58:19Z",
+          "updatedAt": "2022-06-14T19:58:19Z"
         }
       ]
     },
@@ -7837,15 +7935,15 @@
       "id": "I_kwDOEIqrgc5GpWA1",
       "title": "Filter expressions: confusing 'exists' semantics",
       "url": "https://github.com/ietf-wg-jsonpath/draft-ietf-jsonpath-base/issues/180",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "bram209",
       "authorAssociation": "NONE",
       "assignees": [],
       "labels": [],
       "body": "Considering that, according to the grammar, `exist-expr` is a `boolean-exrp`:\r\n\r\n```\r\nexist-expr        = [neg-op S] singular-path \r\n```\r\n\r\nAnd the following note:\r\n> A member or element value by itself in a Boolean context is interpreted as false only if it does not exist. Otherwise it is interpreted as true. To be more specific about the actual value, explicit comparisons are necessary. This existence test -- as an exception to the general rule -- also works with structured values.\r\n\r\nSo this would mean that a singular path that points to a boolean `false` value would evaluate to `true`.\r\n\r\n```json\r\n[\r\n   { \"id\": 1, \"isActive\": true },\r\n   { \"id\": 2, \"isActive\": false },\r\n   { \"id\": 3, \"isActive\": true },\r\n]\r\n```\r\nPeople might try:\r\n`$[?(@.isActive)]` to get the active elements but will be surprised to see all elements returned.\r\n\r\nI think this kind of query is quite common and for people with a developer background it would feel unnatural to type `boolean expression == true`\r\n\r\nOn the other side,  the need for queries that check *implicitly* for existence feels rarer to me (from my experience mostly well-typed tagged unions are used to structure JSON), which makes me wonder if `exists` should be a function instead (once functions get added to the spec).\r\n\r\nThis would make the `exists` check more explicit and therefore less confusing, in my opinion.\r\n\r\n### Proposed solution\r\nPersonally, I would like to:\r\n- have an explicit way of checking existence.\r\n- evaluate singular path to a boolean value (which could be seen as a tautological statement) in the above example\r\n\r\nWhen a singular path is given as a boolean expression but does not point to a boolean value, it gets a bit tricky:\r\n- it could throw an error at the evaluation\r\n- evaluate to false always\r\n- introduce the concept of truthy & falsy values, which could serve similar use cases as `exists`, in this case, `true` would be `truthy` and `false` would be falsy and the above described problem would go away\r\n\r\nI normally am more a statically typed programming language guy so not too keen on the concept of truthy & falsy values, but considering this is a query language for JSON, it might make more sense...\r\n\r\n\r\nThoughts?",
       "createdAt": "2022-03-29T18:16:47Z",
-      "updatedAt": "2022-03-31T03:22:38Z",
-      "closedAt": null,
+      "updatedAt": "2022-06-14T08:48:47Z",
+      "closedAt": "2022-06-14T08:48:46Z",
       "comments": [
         {
           "author": "bram209",
@@ -7874,6 +7972,13 @@
           "body": "> JSON is schema-free and thus dynamically typed\r\n\r\nThis is just wrong.  _Javascript_ is dynamically typed because it considers objects with different property sets to be different types.  _JSON_ is statically typed: objects, arrays, strings, numbers, and the constants `true`, `false`, and `null`.  (Practically speaking, `true` and `false` are booleans.  Making this distinction is splitting hairs and not worth our time.)  For JSON, objects with different property sets, while they are not equivalent, are still the same type: `object`.\r\n\r\n> introduce a new primitive value `undefined`...\r\n\r\nWe've had plenty of conversations stating that we don't want to introduce `undefined` as a value.  To reiterate the above, JSON isn't Javascript; there is no `undefined` in JSON.\r\n\r\n> `if x == true {...}` definitely is a code smell\r\n\r\nAgreed, but the point of the argument is that for the expression `!x`, `x` _appears_ to represent some boolean-ish value, and then the `!` operator is negating that result.\r\n\r\nWe also have declared that expressions in filter selectors (`[?(<expr>)]`) must return boolean values.\r\n\r\nThis results in a syntactical ambiguity for `[?(!@.foo)]`:\r\n\r\n- Is the user testing for the existence of a property?\r\n- Is the user testing for the \"truthiness\" of the value at that property?\r\n\r\nThe _only_ way to know for sure is by forcing `!` followed by a local path (e.g. `!@.foo`) to mean an existence test, which means the _only_ way to check for \"truthiness\" is to compare with a `true` or `false` constant.\r\n\r\nFor what it's worth, my implementation, https://json-everything.net/json-path, returns all three items for the example above, acting as a true existence test.  This means that for my library, you MUST use `x == true` to only get the \"truthy\" ones.\r\n\r\n---\r\n\r\nTo summarize, I see two options to resolve this ambiguity:\r\n\r\n1. An expression in the form `!@.foo` is defined explicitly as an existence test, which forces path authors to use expressions like `x == true` for \"truthiness\" checks (`!@.foo` would return three items from the above example).\r\n2. Expressions strictly return booleans except in the special case of `!@.foo`, for which the expression is \"truthy\" or \"falsy.\"  This forces some other form of existence test, e.g. a function form like `exists(@.foo)` (`!@.foo` would return two items from the above example).\r\n\r\n***NOTE** We've also discussed truthiness at length, and if I recall, we decided against it.  I use it here solely to illustrate my point.*",
           "createdAt": "2022-03-30T11:49:21Z",
           "updatedAt": "2022-03-31T03:22:38Z"
+        },
+        {
+          "author": "glyn",
+          "authorAssociation": "COLLABORATOR",
+          "body": "The current specification seems sufficient. Closing.",
+          "createdAt": "2022-06-14T08:48:46Z",
+          "updatedAt": "2022-06-14T08:48:46Z"
         }
       ]
     },
@@ -8046,15 +8151,15 @@
       "id": "I_kwDOEIqrgc5IayW9",
       "title": "Security considerations first para unconvincing",
       "url": "https://github.com/ietf-wg-jsonpath/draft-ietf-jsonpath-base/issues/185",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "timbray",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "I'm having trouble understanding or believing the first paragraph of Section 5.1, Attack vectors on JSONPath Implementations.  It's saying, essentially, \"Everyone knows that you should never call eval() when processing JSON, so don't do that\".  I have two difficulties:\r\n\r\n1. JSONpaths aren't in JSON. I can't imagine anyone feeding `$.a[?@>3.5]` to an evaluator.  So I'm not sure the advice adds value.  And if I wanted to use a parser generator to build my parser based on the ABNF in the RFC, what's the harm in that?\r\n2. The data you're applying the JSONpath to *is* in JSON.  I don't think there's any harm in using your programming language's equivalent of JSON.parse() to that as part of evaluating the JSONpath, and this paragraph might scare people away from doing that.\r\n\r\nI think it would better just to lose this paragraph.",
       "createdAt": "2022-04-25T20:03:23Z",
-      "updatedAt": "2022-04-26T02:29:34Z",
-      "closedAt": null,
+      "updatedAt": "2022-06-14T08:22:13Z",
+      "closedAt": "2022-06-14T08:22:13Z",
       "comments": [
         {
           "author": "cabo",
@@ -8080,11 +8185,15 @@
       "state": "OPEN",
       "author": "timbray",
       "authorAssociation": "CONTRIBUTOR",
-      "assignees": [],
-      "labels": [],
+      "assignees": [
+        "glyn"
+      ],
+      "labels": [
+        "task"
+      ],
       "body": "I have read the latest draft of section 5.2 \"Attacks on Security Mechanisms that Employ JSONPath\" and I'm having trouble figuring out what it's saying and what would be useful for implementors.\r\n\r\nOn consideration, I think the following is true.  If the JSON text to which you're applying a JSONpath follows the rules of I-JSON [RFC7493] the results should be deterministic and repeatable for the same JSON text from one JSONpath implementation to another. On the other hand, if you have JSON with dupe object keys, or 300-digit numbers, or broken UTF16 surrogates, you really have no expectation of deterministic behavior.   I *think* (do others agree?) that given I-JSON, conforming JSONpath implementations should be deterministic?\r\n\r\nAnyhow, I'd replace section 5.2 with text saying something like \"If your security mechanism includes the use of JSONpath implementations, you should be aware that results will be nondeterministic and interoperation can fail if a JSON text you are processing includes constructs that are deprecated but allowed by [RFC8259]. Deterministic behavior can be expected for any JSON text conformant with [RFC7493].",
       "createdAt": "2022-04-25T20:19:11Z",
-      "updatedAt": "2022-04-25T20:19:11Z",
+      "updatedAt": "2022-06-14T08:49:39Z",
       "closedAt": null,
       "comments": []
     },
@@ -8096,11 +8205,13 @@
       "state": "OPEN",
       "author": "danielaparker",
       "authorAssociation": "NONE",
-      "assignees": [],
+      "assignees": [
+        "glyn"
+      ],
       "labels": [],
       "body": "## Draft Operator Precedence\r\n\r\nThe proposed operator precedence in the draft is shown below.\r\n\r\nPrecedence | Operator type | Syntax\r\n-- | -- | --\r\n5 | Grouping | (...)\r\n4 | Logical NOT | !\r\n3 | Relations | ==,\u00a0!=,<,\u00a0<=,\u00a0>,\u00a0>=,=~\r\n2 | Logical AND | &&\r\n1 | Logical OR | \\|\\|\r\n\r\nIt is assumed that these precedences are motivated by existing languages, but it is also noted that operator precedence is different in different languages such as JavaScript and Python. For example, logical not has low precedence in Python but high precedence in JavaScript and C. The less than/greater than operators have higher precedence than the equality operators in JavaScript and C, but the same precedence in Python. Existing JSONPath implementations that follow these languages for evaluating filter expressions will also have these differences. \r\n\r\nThis issue, created by request, collects the comparable operator precedences for Python, JavaScript, Perl, C And XPath 3.1, to illustrate where they're similar to the draft, and where they differ. Perl is included because of these languages, it is the only one that has a `=~` operator. Note that in Perl, the precedence of the `=~` operator is higher than the comparison operators. \r\n\r\nOne comment: the draft operator precedence table should include an additional column for associativity, which is needed to fully describe the operator. The unary logical not operator should be shown as \"right associative\", and the binary operators should be shown as \"left associative\". \r\n\r\n## JavaScript Operator Precedence\r\n\r\nPrecedence | Operator type | Syntax|Associativity\r\n-- | -- | --|--\r\n7| Parentheses (grouping)|(...)|n/a\r\n6| Member Access, Computed Member Access|. a[]|left to right\r\n5| Logical NOT|! \u2026|right to left\r\n4|Less Than,Less Than Or Equal,Greater Than,Greater Than Or Equal,in|< <= > >= in|left to right\r\n3|Equality,Inequality|== !=|left to right\r\n2|Logical AND|&&|left to right\r\n1|Logical OR|&#124;&#124;|left to right\r\n\r\nSource: [JavaScript Operator Precedence](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_Precedence#table)\r\n\r\n## Perl Operator Precedence\r\n\r\nPrecedence | Operator type | Syntax|Associativity\r\n-- | -- | --|--\r\n9|Not (high precedence version)|!|left\r\n8|Regex match|=~ |left\r\n7|Comparison|< > <= >= lt gt le ge|chained \r\n6|Equal,not equal|== != |chain na\r\n5|Logical and|&&|left\r\n4|Logical or|&#124;&#124;|left\r\n3|Not (low precedence version)|not|right\r\n2|Logical and (lower precedence version)|and|left\r\n1|Logical or (higher precedence version)|or|left \r\n\r\nSource: [Perl Operator Precedence](https://perldoc.perl.org/5.005/perlop#SYNOPSIS)\r\n\r\nRemarks:\r\n\r\n- Unary \"not\" is equivalent to \"!\" except for lower precedence.\r\n- Binary \"and\" and \"or\" are equivalent to && and || except lower precedence\r\n\r\n## C Operator Precedence\r\n\r\nPrecedence | Operator type | Syntax|Associativity\r\n-- | -- | --|--\r\n6|Subscript, member access|a[] .|Left to right\r\n5|Logical not|!|Right to left\r\n4|Relational operators|<\u00a0\u00a0\u00a0<=\u00a0\u00a0\u00a0>\u00a0\u00a0\u00a0>=|Left to right\r\n3|Equality operators|== !=|Left to right\r\n2|Logical and|&&|Left to right\r\n1|Logical or|&#124;&#124;|Left to right\r\n\r\nSource: [C Operator Precedence](https://en.cppreference.com/w/cpp/language/operator_precedence)\r\n\r\n## Python Operator Precedence\r\n\r\nPrecedence | Operator type | Syntax\r\n-- | -- | --\r\n8| Parentheses (grouping)|()\r\n7|Slicing|x[index:index]\r\n6|Subscription|x[index]\r\n5|Attribute reference|x.attribute\r\n4|Comparisons, membership, identity|in, not in, is, is not, <, <=,  >,  >=,<>, !=, ==\r\n3|Boolean NOT|not x\r\n2|Boolean AND|and\r\n1|Boolean OR|or\r\n\r\nSource: [Python Operator Precedence](https://docs.python.org/3/reference/expressions.html#operator-precedence)\r\n\r\n## XPath 3.1 Operator Precedence\r\n\r\nPrecedence | Operator type | Syntax|Associativity\r\n-- | -- | --|--\r\n3|Comparisons|eq, ne, lt, le, gt, ge, =, !=, <, <=, >, >=|NA\r\n2|Logical and|and|Either\t\r\n1|Logical or|or|Either\t\r\n\r\nSource: [XPath 3.1](https://www.w3.org/TR/xpath-31/#id-precedence-order)\r\n\r\nRemarks:\r\n\r\n- XPath 3.1 and XQuery don't have a logical not operator, there's a `!` operator, but it's a binary operator that means something different. Instead, XPath 3.1 and XQuery provide the function [fn:not](https://www.w3.org/TR/xpath-functions-31/#func-not), whose precedence rules follow the rules for functions.",
       "createdAt": "2022-04-29T02:50:48Z",
-      "updatedAt": "2022-04-29T19:00:47Z",
+      "updatedAt": "2022-06-14T09:07:19Z",
       "closedAt": null,
       "comments": [
         {
@@ -8158,6 +8269,20 @@
           "body": "> > Logical NOT is missing from the XPath 3.1 table.\r\n> \r\n> XPath 3.1 and XQuery don't have a logical not operator. Instead, they provide the function [fn:not](https://www.w3.org/TR/xpath-functions-31/#func-not), whose precedence rules follow the rules for functions (not shown in my table.)\r\n\r\nIt may also be interesting to compare with the [jsonata operator precedence](https://www.fernhillsoftware.com/help/jsonata/operators.html#:~:text=Introduction,to%20produce%20a%20single%20result.&text=Note%3A%20When%20multiple%20operators%20are,evaluated%20before%20lower%20priority%20operators). In [jsonata](https://jsonata.org/), like XPath 3.1, Boolean 'NOT' is a [function](https://docs.jsonata.org/boolean-functions#not), not an operator. ",
           "createdAt": "2022-04-29T19:00:47Z",
           "updatedAt": "2022-04-29T19:00:47Z"
+        },
+        {
+          "author": "cabo",
+          "authorAssociation": "MEMBER",
+          "body": "We could at least document the associativity.",
+          "createdAt": "2022-06-14T08:44:45Z",
+          "updatedAt": "2022-06-14T08:44:45Z"
+        },
+        {
+          "author": "timbray",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "After discussion, is there anything that needs to be changed in the draft aside from adding associativity specification?",
+          "createdAt": "2022-06-14T08:46:00Z",
+          "updatedAt": "2022-06-14T08:46:00Z"
         }
       ]
     },
@@ -8319,6 +8444,108 @@
           "body": "Fixed as part of e82ce1f521e94ee2cd5b93d14726875e94a4a8e7.",
           "createdAt": "2022-05-31T09:42:58Z",
           "updatedAt": "2022-05-31T09:42:58Z"
+        }
+      ]
+    },
+    {
+      "number": 194,
+      "id": "I_kwDOEIqrgc5Lugyr",
+      "title": "Extension support",
+      "url": "https://github.com/ietf-wg-jsonpath/draft-ietf-jsonpath-base/issues/194",
+      "state": "OPEN",
+      "author": "fiestajetsam",
+      "authorAssociation": "MEMBER",
+      "assignees": [
+        "cabo"
+      ],
+      "labels": [
+        "enhancement",
+        "extension"
+      ],
+      "body": "Cover how the extension mechanism, including updates to IANA work.",
+      "createdAt": "2022-06-14T09:00:43Z",
+      "updatedAt": "2022-06-14T17:57:47Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "cabo",
+          "authorAssociation": "MEMBER",
+          "body": "Let me try to summarize the objectives here:\r\n\r\n* The extension mechanism specifies the grammar for all jsonpath queries that make use of this mechanism, i.e., the individual extensions do not define additional grammar\r\n* A consumer of queries can there parse any extended query; this allows it to find out which extensions are being used in a query (as a list of names)\r\n* We include one feature in jsonpath-base that makes use of the extension mechanism (so far, a length feature has had the most support)\r\n* Extensions are defined in an IANA registry that would initially be populated with the one extension we include\r\n* The registration policy (RFC 8126) for that registry needs to be decided, probably on the spectrum between Specification Required (with some specific instructions to the designated expert) and IETF review.\r\n",
+          "createdAt": "2022-06-14T09:39:30Z",
+          "updatedAt": "2022-06-14T09:39:30Z"
+        },
+        {
+          "author": "danielaparker",
+          "authorAssociation": "NONE",
+          "body": "Why? The draft specification is already somewhat incompatible with all existing implementations, all existing implementations would see major breaking changes were they to move to conformity with the draft. Why then allow for additional incompatibilities between new implementations that follow the draft? It seems to me that the primary value of the draft is interoperability, and extensions break interoperability.   ",
+          "createdAt": "2022-06-14T17:45:25Z",
+          "updatedAt": "2022-06-14T17:46:07Z"
+        },
+        {
+          "author": "cabo",
+          "authorAssociation": "MEMBER",
+          "body": ">  extensions break interoperability.\r\n\r\nThe damage done by extensions is larger when they are done in an uncontrolled, chaotic fashion.  And they will be, if we don't define an extension point.",
+          "createdAt": "2022-06-14T17:57:29Z",
+          "updatedAt": "2022-06-14T17:57:47Z"
+        }
+      ]
+    },
+    {
+      "number": 195,
+      "id": "I_kwDOEIqrgc5Luqi0",
+      "title": "Do we really require a singular path for `exist-expr`",
+      "url": "https://github.com/ietf-wg-jsonpath/draft-ietf-jsonpath-base/issues/195",
+      "state": "OPEN",
+      "author": "cabo",
+      "authorAssociation": "MEMBER",
+      "assignees": [],
+      "labels": [],
+      "body": "Usually, existence could be asked in the form \"is there any...\".\r\nWe restrict exist-expr to singular paths, though.\r\nDo we really want to make this restriction?\r\n",
+      "createdAt": "2022-06-14T09:32:41Z",
+      "updatedAt": "2022-06-15T11:02:06Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "gregsdennis",
+          "authorAssociation": "COLLABORATOR",
+          "body": "I'm trying to think how this would be done practically.  All the examples for existence testing are in the form `$[?(@.foo)]` (as you mention).\n\nWhat sorts of plural paths are you suggesting could also test for existence?  The only one I can think of would be `$[?(@.*)]` which I suppose could return any non-empty objects.",
+          "createdAt": "2022-06-14T20:03:57Z",
+          "updatedAt": "2022-06-14T20:03:57Z"
+        },
+        {
+          "author": "cabo",
+          "authorAssociation": "MEMBER",
+          "body": "\r\n```\r\n[\r\n  [ {\"normal\": 3711, \"fallback\": 815},\r\n    {\"normal\": 4711},\r\n    {\"normal\": 5711, \"fallback\": 615}\r\n  ],\r\n  ...\r\n]\r\n```\r\n\r\n`$[?(@.*.fallback)]` -- which top level elements have sub-elements with a fallback member?\r\n",
+          "createdAt": "2022-06-14T20:12:48Z",
+          "updatedAt": "2022-06-14T20:12:48Z"
+        },
+        {
+          "author": "danielaparker",
+          "authorAssociation": "NONE",
+          "body": "It's not obvious to me what you're expecting here.\r\n\r\nConsider\r\n```json\r\n[\r\n  [ {\"normal\": 3711, \"fallback\": 815},\r\n    {\"normal\": 4711, \"fallback\": 10},\r\n    {\"normal\": 5711, \"fallback\": 615}\r\n  ],\r\n  [ {\"normal\": 3711, \"fallback\": 815},\r\n    {\"normal\": 4711},\r\n    {\"normal\": 5711, \"fallback\": 615}\r\n  ],\r\n  [ {\"normal\": 3711},\r\n    {\"normal\": 4711},\r\n    {\"normal\": 5711}\r\n  ]\r\n]\r\n```\r\nIf we try `$[?(@.*.fallback)]` with Jayway JSONPath, an implementation that evaluates `@.foo` as a test for existence, and supports arbitrary JSONPath expressions in filter predicates, we obtain\r\n\r\n```json\r\n[\r\n   [\r\n      {\r\n         \"normal\" : 3711,\r\n         \"fallback\" : 815\r\n      },\r\n      {\r\n         \"normal\" : 4711,\r\n         \"fallback\" : 10\r\n      },\r\n      {\r\n         \"normal\" : 5711,\r\n         \"fallback\" : 615\r\n      }\r\n   ]\r\n]\r\n```\r\nWith Jayway semantics, all the evaluations of `@.*.fallback` have to return true for `@` to be accepted.",
+          "createdAt": "2022-06-14T21:51:30Z",
+          "updatedAt": "2022-06-14T21:51:30Z"
+        },
+        {
+          "author": "glyn",
+          "authorAssociation": "COLLABORATOR",
+          "body": "@danielaparker yes, good question.\r\n\r\nNote Jayway's logical treatment of existence of all members of an empty set.  Evaluating `$[?(@.*.fallback)]` against\r\n```\r\n[\r\n[\r\n]\r\n]\r\n```\r\nyields:\r\n```\r\n[\r\n   [\r\n      \r\n   ]\r\n]\r\n```",
+          "createdAt": "2022-06-15T06:56:02Z",
+          "updatedAt": "2022-06-15T06:56:02Z"
+        },
+        {
+          "author": "cabo",
+          "authorAssociation": "MEMBER",
+          "body": "Obviously, if the path is no longer singular, there needs to be a definition if this is a \u2200 for-all (as in Jayway) or an \u2203 exists (as I would have expected from the name).",
+          "createdAt": "2022-06-15T08:43:41Z",
+          "updatedAt": "2022-06-15T08:43:41Z"
+        },
+        {
+          "author": "gregsdennis",
+          "authorAssociation": "COLLABORATOR",
+          "body": "I see no problem with this.\n\nI would also expect this to be an \"any exists\" operation.  Framed more verbosely, the query says \"find all children of the root array for which `@.*.fallback` returns a non-empty set.\"  This interpretation would return the first two sub-arrays.",
+          "createdAt": "2022-06-15T11:02:06Z",
+          "updatedAt": "2022-06-15T11:02:06Z"
         }
       ]
     }
