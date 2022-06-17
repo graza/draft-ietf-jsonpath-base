@@ -1624,7 +1624,7 @@ Examples
    implementations.
 
    Unexpected or unpredictable behaviour can arise from an argument with
-   certain constructs described as unpredictable by [RFC8259] [RFC8259].
+   certain constructs described as unpredictable by [RFC8259].
    Predictable behavior can be expected, except in relation to the
    ordering of objects, for any argument conforming with [RFC7493].
 
