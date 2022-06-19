@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2022-06-16T01:55:54.752422+00:00",
+  "timestamp": "2022-06-19T02:06:10.748435+00:00",
   "repo": "ietf-wg-jsonpath/draft-ietf-jsonpath-base",
   "labels": [
     {
@@ -1571,7 +1571,7 @@
       "labels": [],
       "body": "There are really two questions here:\r\n\r\n### Is this something we want to support?\r\n\r\nIt was proposed by Goessner's original post and supported by his libraries.  That alone is a good argument, but additionally, it's already supported by a large number of implementations in other langauges.\r\n\r\nConversely, we may want to postpone inclusion of this for simplicity's sake.\r\n\r\n### What is the format we should use?\r\n\r\nGoessner's original post (2007) described using JSONPath itself as the format used to indicate the position.  The issue with using JSONPath is that it's a query syntax, and while it _can_ isolate a single value, it's not specifically designed to.\r\n\r\n[JSON Pointer](https://tools.ietf.org/html/rfc6901#section-7) (2013), however, _was_ designed to isolate a single value within a JSON structure.  It has other advantages as well:\r\n\r\n- It's a simple syntax.\r\n- It's already in a formal specification.\r\n- It's widely supported.\r\n\r\nFurthermore, it's non-competitive with JSONPath because of its different intended purpose: isolating single values vs JSONPath's querying for potentially multiple values.",
       "createdAt": "2020-12-04T11:11:15Z",
-      "updatedAt": "2022-01-17T23:16:06Z",
+      "updatedAt": "2022-06-16T11:22:07Z",
       "closedAt": "2022-01-17T23:16:06Z",
       "comments": [
         {
@@ -1696,9 +1696,9 @@
         {
           "author": "gregsdennis",
           "authorAssociation": "COLLABORATOR",
-          "body": "Okay... So I think it's clear that JSON Pointer is not desired for this (even though it's already mentioned in the spec to declare that Path is not an alternative for it).\n\nThe main point of this issue was too determine if we want locations included in the output.  Let's keep focused on that, please.",
+          "body": "Okay... So I think it's clear that JSON Pointer is not desired for this (even though it's already mentioned in the spec to declare that Path is not an alternative for it).\r\n\r\nThe main point of this issue was to determine if we want locations included in the output.  Let's keep focused on that, please.",
           "createdAt": "2021-03-09T00:39:10Z",
-          "updatedAt": "2021-03-09T00:39:10Z"
+          "updatedAt": "2022-06-16T11:22:07Z"
         },
         {
           "author": "cabo",
@@ -8193,9 +8193,45 @@
       ],
       "body": "I have read the latest draft of section 5.2 \"Attacks on Security Mechanisms that Employ JSONPath\" and I'm having trouble figuring out what it's saying and what would be useful for implementors.\r\n\r\nOn consideration, I think the following is true.  If the JSON text to which you're applying a JSONpath follows the rules of I-JSON [RFC7493] the results should be deterministic and repeatable for the same JSON text from one JSONpath implementation to another. On the other hand, if you have JSON with dupe object keys, or 300-digit numbers, or broken UTF16 surrogates, you really have no expectation of deterministic behavior.   I *think* (do others agree?) that given I-JSON, conforming JSONpath implementations should be deterministic?\r\n\r\nAnyhow, I'd replace section 5.2 with text saying something like \"If your security mechanism includes the use of JSONpath implementations, you should be aware that results will be nondeterministic and interoperation can fail if a JSON text you are processing includes constructs that are deprecated but allowed by [RFC8259]. Deterministic behavior can be expected for any JSON text conformant with [RFC7493].",
       "createdAt": "2022-04-25T20:19:11Z",
-      "updatedAt": "2022-06-14T08:49:39Z",
+      "updatedAt": "2022-06-17T14:20:27Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "glyn",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Note that in https://github.com/ietf-wg-jsonpath/draft-ietf-jsonpath-base/pull/196, I didn't adopt the language above to describe certain constructs as \"deprecated but allowed\" by RFC 8259 since that RFC does not use the term deprecation. Please feel free to object to this in the PR.",
+          "createdAt": "2022-06-17T11:20:22Z",
+          "updatedAt": "2022-06-17T11:20:22Z"
+        },
+        {
+          "author": "danielaparker",
+          "authorAssociation": "NONE",
+          "body": "It's been previously mentioned in the issues, but the draft should say something about the danger of attack from a query that triggers overflow in a recursive step. The JSONPath recursion operator, given how it's implemented in many implementations, is vulnerable to attack, in situations where a JSONPath expression is provided as a parameter. It's pretty obvious that some, perhaps even most, implementations would not be able to pass Google fuzzer, were that a scenario. Note that enterprises take the risk of vulnerability through recursion very seriously.  In my opinion, some limits on recursion levels ought to be specified.",
+          "createdAt": "2022-06-17T11:39:43Z",
+          "updatedAt": "2022-06-17T11:39:43Z"
+        },
+        {
+          "author": "glyn",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Interesting. Wouldn't such a stack overflow attack be bounded by the JSON document? I guess where an attacker can provide _both_ the JSON document and the JSONPath, there is an opportunity for stack overflow. But there is a more general resource exhaustion attack if attackers are allowed to provide arbitrarily large JSON documents.\r\n\r\nI agree that JSONPath implementations may wish to defend themselves by imposing recusion limits, memory limits, etc., but I'm not sure I'd want to go as far as requiring specific limits in the spec.",
+          "createdAt": "2022-06-17T11:51:17Z",
+          "updatedAt": "2022-06-17T11:51:17Z"
+        },
+        {
+          "author": "danielaparker",
+          "authorAssociation": "NONE",
+          "body": "> Interesting. Wouldn't such a stack overflow attack be bounded by the JSON document?\r\n\r\nI believe so, but as you also mention, the attacker could supply both. Or supply a document that exploits a JSONPath with a recursive operator.\r\n\r\nOf course, a hostile document raises more issues than for just JSONPath. Pull parsers also may exhibit recursion, Microsoft guards against that by limiting .Net JSON parser depth by default to 64. \r\n\r\nMy own view is that in today's world, anything that suggests recursion should be flagged.\r\n\r\n ",
+          "createdAt": "2022-06-17T12:10:53Z",
+          "updatedAt": "2022-06-17T12:12:57Z"
+        },
+        {
+          "author": "glyn",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Ok, and based on the advice in https://datatracker.ietf.org/doc/html/rfc3552 on DOS attacks, I'll put together a PR to flag up the risk of a DOS attack due to recursion and see how that goes down.",
+          "createdAt": "2022-06-17T14:20:27Z",
+          "updatedAt": "2022-06-17T14:20:27Z"
+        }
+      ]
     },
     {
       "number": 188,
@@ -8502,7 +8538,7 @@
       "labels": [],
       "body": "Usually, existence could be asked in the form \"is there any...\".\r\nWe restrict exist-expr to singular paths, though.\r\nDo we really want to make this restriction?\r\n",
       "createdAt": "2022-06-14T09:32:41Z",
-      "updatedAt": "2022-06-15T11:02:06Z",
+      "updatedAt": "2022-06-17T10:49:35Z",
       "closedAt": null,
       "comments": [
         {
@@ -8546,6 +8582,34 @@
           "body": "I see no problem with this.\n\nI would also expect this to be an \"any exists\" operation.  Framed more verbosely, the query says \"find all children of the root array for which `@.*.fallback` returns a non-empty set.\"  This interpretation would return the first two sub-arrays.",
           "createdAt": "2022-06-15T11:02:06Z",
           "updatedAt": "2022-06-15T11:02:06Z"
+        },
+        {
+          "author": "danielaparker",
+          "authorAssociation": "NONE",
+          "body": "Just to follow up with a comparison with [Newtonsoft JSON.Net](https://www.newtonsoft.com/) JSONPath, which is another of the dozen implementations in the JSONPath Comparisons that evaluate `@.foo` as a test for existence. Of these dozen implementations, Jayway and Newtonsoft are clearly the most important. Java Jayway is likely the most widely used of all implementations, and is incorporated in Oracle enterprise API's. Newtonsoft JSON.Net shows 2 billion downloads on NuGet.\r\n\r\nGiven\r\n```json \r\n[\r\n  [ {\"normal\": 3711, \"fallback\": 815},\r\n    {\"normal\": 4711, \"fallback\": 10},\r\n    {\"normal\": 5711, \"fallback\": 615}\r\n  ],\r\n  [ {\"normal\": 3711, \"fallback\": 815},\r\n    {\"normal\": 4711},\r\n    {\"normal\": 5711, \"fallback\": 615}\r\n  ],\r\n  [ {\"normal\": 3711},\r\n    {\"normal\": 4711},\r\n    {\"normal\": 5711}\r\n  ]\r\n]\r\n```\r\nand query\r\n```\r\n$[?(@.*.fallback)]\r\n```\r\nNewtonsoft JSONPath returns no results. However, given, to my eye, the more natural query\r\n\r\n```\r\n$[?(@[?(@.fallback)])]\r\n```\r\nNewtonsoft JSONPath returns \r\n```json\r\n[\r\n  [\r\n    {    \"normal\": 3711,    \"fallback\": 815  },\r\n    {    \"normal\": 4711,    \"fallback\": 10  },\r\n    {    \"normal\": 5711,    \"fallback\": 615  }\r\n  ],\r\n  [\r\n    {    \"normal\": 3711,    \"fallback\": 815  },\r\n    {    \"normal\": 4711  },\r\n    {    \"normal\": 5711,    \"fallback\": 615  }\r\n  ]\r\n]\r\n```\r\n\r\nJayway, in contrast, when given\r\n```\r\n$[?(@[?(@.fallback)])]\r\n```\r\nreturns everything,\r\n\r\n```json \r\n[\r\n  [ {\"normal\": 3711, \"fallback\": 815},\r\n    {\"normal\": 4711, \"fallback\": 10},\r\n    {\"normal\": 5711, \"fallback\": 615}\r\n  ],\r\n  [ {\"normal\": 3711, \"fallback\": 815},\r\n    {\"normal\": 4711},\r\n    {\"normal\": 5711, \"fallback\": 615}\r\n  ],\r\n  [ {\"normal\": 3711},\r\n    {\"normal\": 4711},\r\n    {\"normal\": 5711}\r\n  ]\r\n]\r\n```\r\n\r\n",
+          "createdAt": "2022-06-16T23:32:27Z",
+          "updatedAt": "2022-06-16T23:56:12Z"
+        },
+        {
+          "author": "gregsdennis",
+          "authorAssociation": "COLLABORATOR",
+          "body": "(Newtonsoft is losing importance as .Net's built-in JSON support continues to grow.  Newtonsoft's download count is due to it being available for a couple decades.  It's not a good metric to convey current state.)",
+          "createdAt": "2022-06-17T00:49:24Z",
+          "updatedAt": "2022-06-17T00:50:46Z"
+        },
+        {
+          "author": "danielaparker",
+          "authorAssociation": "NONE",
+          "body": "> Newtonsoft's download count is due to it being available for a couple decades.\r\n\r\nAll the more impressive that Newtonsoft's JSONPath is more expressive than the Committee's attempts :-) At least with supporting a natural query that returns @cabo's preferred result. \r\n\r\nBest regards,\r\nDaniel ",
+          "createdAt": "2022-06-17T01:37:57Z",
+          "updatedAt": "2022-06-17T01:37:57Z"
+        },
+        {
+          "author": "danielaparker",
+          "authorAssociation": "NONE",
+          "body": "> Newtonsoft is losing importance\r\n\r\nI agree that Newtonsoft's .Net JSONPath isn't as important as Jayway Java JSONPath, which is older. I don't think JSONPath ever achieved the popularity on .Net that Jayway did in Java, where it got incorporated into Oracle enterprise API's. In .Net, users were more likely, once the JSON was mapped into C# types, to use Microsoft technologies, notably LINQ, to query them.  \r\n\r\nOn Stack Overflow, it sometimes seems that  Jayway JSONPath _is_ JSONPath, to users, who rarely qualify their questions by mentioning the implementation, and to responders, who answer accordingly. For example, a recent questioner asked about the `length()` function, which Jayway has, but otherwise is not common. A responder replied referencing a Jayway online site. Neither questioner or responder specifically mentioned \"Jayway\", but they obviously had a common frame of reference. \r\n",
+          "createdAt": "2022-06-17T10:36:23Z",
+          "updatedAt": "2022-06-17T10:49:35Z"
         }
       ]
     }
@@ -30828,6 +30892,178 @@
           "comments": []
         }
       ]
+    },
+    {
+      "number": 196,
+      "id": "PR_kwDOEIqrgc452MFy",
+      "title": "Improve security considerations",
+      "url": "https://github.com/ietf-wg-jsonpath/draft-ietf-jsonpath-base/pull/196",
+      "state": "OPEN",
+      "author": "glyn",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [
+        "glyn"
+      ],
+      "labels": [],
+      "body": "See also [this rendered version](https://ietf-wg-jsonpath.github.io/draft-ietf-jsonpath-base/186-security-considerations/draft-ietf-jsonpath-base.html#name-attacks-on-security-mechani).\r\n\r\nFixes https://github.com/ietf-wg-jsonpath/draft-ietf-jsonpath-base/issues/186",
+      "createdAt": "2022-06-17T11:13:36Z",
+      "updatedAt": "2022-06-17T15:56:48Z",
+      "baseRepository": "ietf-wg-jsonpath/draft-ietf-jsonpath-base",
+      "baseRefName": "main",
+      "baseRefOid": "822fd6d3d5d55d1ae1637498b28df086ee9f9c72",
+      "headRepository": "ietf-wg-jsonpath/draft-ietf-jsonpath-base",
+      "headRefName": "186-security-considerations",
+      "headRefOid": "921f7baeced324480fe0da6680097886d3819003",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOEIqrgc48OO-p",
+          "commit": {
+            "abbreviatedOid": "921f7ba"
+          },
+          "author": "glyn",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2022-06-17T11:18:25Z",
+          "updatedAt": "2022-06-17T11:18:26Z",
+          "comments": [
+            {
+              "originalPosition": 17,
+              "body": "Note that I didn't adopt the language of https://github.com/ietf-wg-jsonpath/draft-ietf-jsonpath-base/issues/186 to describe certain constructs as \"deprecated but allowed\" by RFC 8259 since that RFC does not use the term deprecation.",
+              "createdAt": "2022-06-17T11:18:25Z",
+              "updatedAt": "2022-06-17T11:18:26Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOEIqrgc48PU-c",
+          "commit": {
+            "abbreviatedOid": "921f7ba"
+          },
+          "author": "timbray",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2022-06-17T15:21:18Z",
+          "updatedAt": "2022-06-17T15:21:18Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 197,
+      "id": "PR_kwDOEIqrgc45246l",
+      "title": "Mention recursion as an attack vector",
+      "url": "https://github.com/ietf-wg-jsonpath/draft-ietf-jsonpath-base/pull/197",
+      "state": "OPEN",
+      "author": "glyn",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [
+        "glyn"
+      ],
+      "labels": [],
+      "body": "Also add some general advice from https://www.rfc-editor.org/rfc/rfc8949#name-security-considerations.\r\n\r\nSee also [this rendered version](https://ietf-wg-jsonpath.github.io/draft-ietf-jsonpath-base/186-recursion-DOS/draft-ietf-jsonpath-base.html#name-attack-vectors-on-jsonpath-).\r\n\r\nRef: https://github.com/ietf-wg-jsonpath/draft-ietf-jsonpath-base/issues/186#issuecomment-1158920404",
+      "createdAt": "2022-06-17T14:39:11Z",
+      "updatedAt": "2022-06-17T16:42:23Z",
+      "baseRepository": "ietf-wg-jsonpath/draft-ietf-jsonpath-base",
+      "baseRefName": "main",
+      "baseRefOid": "822fd6d3d5d55d1ae1637498b28df086ee9f9c72",
+      "headRepository": "ietf-wg-jsonpath/draft-ietf-jsonpath-base",
+      "headRefName": "186-recursion-DOS",
+      "headRefOid": "a0623e453f32637de544faffe79a8dc038f8918b",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOEIqrgc48PUiz",
+          "commit": {
+            "abbreviatedOid": "a0623e4"
+          },
+          "author": "timbray",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2022-06-17T15:19:50Z",
+          "updatedAt": "2022-06-17T15:19:50Z",
+          "comments": []
+        },
+        {
+          "id": "PRR_kwDOEIqrgc48PsUW",
+          "commit": {
+            "abbreviatedOid": "a0623e4"
+          },
+          "author": "cabo",
+          "authorAssociation": "MEMBER",
+          "state": "CHANGES_REQUESTED",
+          "body": "",
+          "createdAt": "2022-06-17T16:09:45Z",
+          "updatedAt": "2022-06-17T16:10:00Z",
+          "comments": [
+            {
+              "originalPosition": 7,
+              "body": "I'm not sure how the example \"descendant selector\" helps here.\r\n\r\n```suggestion\r\nexponential, CPU usage or\r\n```",
+              "createdAt": "2022-06-17T16:09:46Z",
+              "updatedAt": "2022-06-17T16:10:00Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOEIqrgc48P3VB",
+          "commit": {
+            "abbreviatedOid": "a0623e4"
+          },
+          "author": "glyn",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2022-06-17T16:42:22Z",
+          "updatedAt": "2022-06-17T16:42:23Z",
+          "comments": [
+            {
+              "originalPosition": 7,
+              "body": "That example points out the main source of recursion in JSONPath implementations and will hopefully make implementers think twice about how they implement this feature.\r\n\r\n(The other potential source of recursion would be nested filters, but our grammar currently precludes these.)\r\n\r\n",
+              "createdAt": "2022-06-17T16:42:23Z",
+              "updatedAt": "2022-06-17T16:42:23Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 198,
+      "id": "PR_kwDOEIqrgc453KCM",
+      "title": "Logical operator semantics",
+      "url": "https://github.com/ietf-wg-jsonpath/draft-ietf-jsonpath-base/pull/198",
+      "state": "OPEN",
+      "author": "glyn",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [
+        "glyn"
+      ],
+      "labels": [],
+      "body": "See also [this rendered version](https://ietf-wg-jsonpath.github.io/draft-ietf-jsonpath-base/188-associativity/draft-ietf-jsonpath-base.html#name-semantics-9).\r\n\r\nRef: https://en.wikipedia.org/wiki/Boolean_algebra#Laws\r\n\r\nFixes https://github.com/ietf-wg-jsonpath/draft-ietf-jsonpath-base/issues/188",
+      "createdAt": "2022-06-17T15:35:15Z",
+      "updatedAt": "2022-06-17T20:45:45Z",
+      "baseRepository": "ietf-wg-jsonpath/draft-ietf-jsonpath-base",
+      "baseRefName": "main",
+      "baseRefOid": "822fd6d3d5d55d1ae1637498b28df086ee9f9c72",
+      "headRepository": "ietf-wg-jsonpath/draft-ietf-jsonpath-base",
+      "headRefName": "188-associativity",
+      "headRefOid": "e67c274ab9b0f07672e324b3b37480936bd21c76",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": []
     }
   ]
 }
