@@ -5,10 +5,10 @@
 JSONPath WG                                              S. Gössner, Ed.
 Internet-Draft                                   Fachhochschule Dortmund
 Intended status: Standards Track                      G. Normington, Ed.
-Expires: 15 December 2022                                               
+Expires: 25 December 2022                                               
                                                          C. Bormann, Ed.
                                                   Universität Bremen TZI
-                                                            13 June 2022
+                                                            23 June 2022
 
 
                   JSONPath: Query expressions for JSON
@@ -48,7 +48,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 15 December 2022.
+   This Internet-Draft will expire on 25 December 2022.
 
 Copyright Notice
 
@@ -526,23 +526,24 @@ Table of Contents
 
    *  Root selector $ (used at the start of a query and in expressions)
 
-   *  Dot selector .<name>, used with object member names exclusively.
+   *  Dot selector .<name>, used with object member names exclusively
 
-   *  Dot wildcard selector .*.
+   *  Dot wildcard selector .*
 
    *  Index selector [<index>], where <index> is either a (possibly
       negative, see Section "Semantics") array index or an object member
-      name.
+      name
 
-   *  Index wildcard selector [*].
+   *  Index wildcard selector [*]
 
    *  Array slice selector [<start>:<end>:<step>], where the optional
-      values <start>, <end>, and <step> are integer literals.
+      values <start>, <end>, and <step> are integer literals
 
-   *  Descendants selector ...
+   *  Descendants selector starting with a double dot ..
 
    *  List selector [<sel1>,<sel2>,...,<selN>], holding a comma
-      separated list of index and slice selectors.
+
+      separated list of index and slice selectors
 
    *  Filter selector [?(<expr>)]
 
