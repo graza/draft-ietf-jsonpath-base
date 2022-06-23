@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2022-06-19T02:06:10.748435+00:00",
+  "timestamp": "2022-06-23T01:58:34.019936+00:00",
   "repo": "ietf-wg-jsonpath/draft-ietf-jsonpath-base",
   "labels": [
     {
@@ -8610,6 +8610,123 @@
           "body": "> Newtonsoft is losing importance\r\n\r\nI agree that Newtonsoft's .Net JSONPath isn't as important as Jayway Java JSONPath, which is older. I don't think JSONPath ever achieved the popularity on .Net that Jayway did in Java, where it got incorporated into Oracle enterprise API's. In .Net, users were more likely, once the JSON was mapped into C# types, to use Microsoft technologies, notably LINQ, to query them.  \r\n\r\nOn Stack Overflow, it sometimes seems that  Jayway JSONPath _is_ JSONPath, to users, who rarely qualify their questions by mentioning the implementation, and to responders, who answer accordingly. For example, a recent questioner asked about the `length()` function, which Jayway has, but otherwise is not common. A responder replied referencing a Jayway online site. Neither questioner or responder specifically mentioned \"Jayway\", but they obviously had a common frame of reference. \r\n",
           "createdAt": "2022-06-17T10:36:23Z",
           "updatedAt": "2022-06-17T10:49:35Z"
+        }
+      ]
+    },
+    {
+      "number": 199,
+      "id": "I_kwDOEIqrgc5MRpbP",
+      "title": "Processing model section not necessary",
+      "url": "https://github.com/ietf-wg-jsonpath/draft-ietf-jsonpath-base/issues/199",
+      "state": "OPEN",
+      "author": "gregsdennis",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "In a previous issue, I suggested the idea of adding a processing model description to the specification.  So [Section 3.2](https://datatracker.ietf.org/doc/html/draft-ietf-jsonpath-base#section-3.2) was added.\r\n\r\nHowever, in re-reading the current document, I found that the process is repeated (albeit with less detail) in [Section 3.4](https://datatracker.ietf.org/doc/html/draft-ietf-jsonpath-base#section-3.4).\r\n\r\nI think that the language in 3.4 may be sufficient to explain how the path is expected to operate, making the processing model (or at least one of them) somewhat redundant.  Can we combine these sections in some way instead of repeating ourselves?",
+      "createdAt": "2022-06-22T07:31:12Z",
+      "updatedAt": "2022-06-22T07:31:12Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 200,
+      "id": "I_kwDOEIqrgc5MRu5a",
+      "title": "Remove periods at the ends of the selector descriptions",
+      "url": "https://github.com/ietf-wg-jsonpath/draft-ietf-jsonpath-base/issues/200",
+      "state": "OPEN",
+      "author": "gregsdennis",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [
+        "has PR"
+      ],
+      "body": "[Section 3.5](https://datatracker.ietf.org/doc/html/draft-ietf-jsonpath-base#section-3.5) contains a bulleted list of the selector types.  Each of the items in the list ends with a period.  While it may (or may not) be grammatically correct, it leads to some confusing text, specifically when a selector contains, or completely comprises of, periods.\r\n\r\nFor example:\r\n\r\n```\r\n *  Descendants selector ...\r\n```\r\n\r\nBecause we only have plain text, it's really difficult to see what's going on here.  Formatted, it would look like\r\n\r\n> - Descendants selector `..`.\r\n\r\nwhich is much clearer.\r\n\r\nIf the spec is to continue being issued in a plain text format, I suggest we remove the ending periods from these lines.",
+      "createdAt": "2022-06-22T07:48:33Z",
+      "updatedAt": "2022-06-22T08:40:24Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 201,
+      "id": "I_kwDOEIqrgc5MR0yQ",
+      "title": "Selector classes don't feel right",
+      "url": "https://github.com/ietf-wg-jsonpath/draft-ietf-jsonpath-base/issues/201",
+      "state": "OPEN",
+      "author": "gregsdennis",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "I think we've cornered ourselves with the way we've defined the selectors, specifically around the array-format selectors.\r\n\r\nImplementing a parser for JSON Path, it feels more correct to say that the bracket syntax houses (potentially) multiple selectors.\r\n\r\nIn [Section 3.5](https://datatracker.ietf.org/doc/html/draft-ietf-jsonpath-base#section-3.5), The text gives examples of thes selectors by including the brackets:\r\n\r\n```\r\n   *  Index selector [<index>], where <index> is either a (possibly negative, see Section \"Semantics\") array index or an object member name.\r\n   *  Index wildcard selector [*].\r\n   *  Array slice selector [<start>:<end>:<step>], where the optional values <start>, <end>, and <step> are integer literals.\r\n   *  Descendants selector ...\r\n   *  List selector [<sel1>,<sel2>,...,<selN>], holding a comma separated list of index and slice selectors.\r\n   *  Filter selector [?(<expr>)]\r\n```\r\n\r\nIf instead we describe each select without the brackets, and describe the brackets as merely a housing for one or more selectors, then we can actually remove the \"list\" selector as it becomes defined implicitly.  I would change the above to\r\n\r\n```\r\n   *  Name selector '<name>', where <name> is a string key of an object.\r\n   *  Index selector <index>, where <index> is either a (possibly negative, see Section \"Semantics\") array index.\r\n   *  Index wildcard selector *.\r\n   *  Array slice selector <start>:<end>:<step>, where the optional values <start>, <end>, and <step> are integer literals.\r\n   *  Descendants selector ...\r\n   *  Filter selector ?(<expr>)\r\n```\r\n\r\nalong with some text stating that each of these must be contained within brackets and may be combined by comma-delimiting them within the brackets.\r\n\r\n***NOTE**  In the above, I've removed List Selector and added Name Selector (split from Index).*\r\n\r\nFrom an implementor's point of view, this makes a lot more sense.",
+      "createdAt": "2022-06-22T08:04:19Z",
+      "updatedAt": "2022-06-22T10:33:56Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "cabo",
+          "authorAssociation": "MEMBER",
+          "body": "On 2022-06-22, at 10:04, Greg Dennis ***@***.***> wrote:\n> \n> From an implementor's point of view, this makes a lot more sense.\n\nYes. The current description tries to provide a useful exposition and is not optimized for 1:1 translation into an implementation of the parser.  \n\nThis may be a bit unsatisfactory, but the syntax is what it is.\n\nIn any case, we need to make sure that we only call actual selectors selectors, not any syntactic component of selectors.\n\nGr\u00fc\u00dfe, Carsten\n\n",
+          "createdAt": "2022-06-22T08:45:49Z",
+          "updatedAt": "2022-06-22T08:45:49Z"
+        },
+        {
+          "author": "gregsdennis",
+          "authorAssociation": "COLLABORATOR",
+          "body": "> the syntax is what it is - @cabo \r\n\r\nAre we looking for people to write parsers or understand how the language works?  It seems to behoove us to write the language description in a way that makes logical sense, which is not what we've done.  We're mixing ideas.\r\n\r\nThe spec isn't written in stone.  We can still change and improve it.  To say this is throwing your hands up in defeat and saying, \"Well, it's this way now.  I guess that's it.\"\r\n\r\nThe syntax as it exists is not representative of how it will be parsed or how path authors will understand it.  You acknowledged this.  Why oppose updating it to reflect how it will be understood in the real world?\r\n\r\n> we need to make sure that we only call actual selectors selectors, not any syntactic component of selectors\r\n\r\nThis is what I'm saying!  The `[]` itself isn't the selector, the items within it are.  The `[]` is merely an operator that _contains_ selectors.  This was previously called the \"union selector\" because of this exact behavior.\r\n\r\nIf we don't do this, then the \"list selector\" as defined (`holding a comma separated list of index and slice selectors`) is incorrect.  That definition would give us, for example, `[[1],['name'],[1:10:2]]` because, according to what you're saying, the items aren't selectors.",
+          "createdAt": "2022-06-22T09:29:19Z",
+          "updatedAt": "2022-06-22T09:29:19Z"
+        },
+        {
+          "author": "cabo",
+          "authorAssociation": "MEMBER",
+          "body": "Hi Greg,\n\n> On 2022-06-22, at 11:29, Greg Dennis ***@***.***> wrote:\n> \n> \n> > the syntax is what it is - @cabo\n> \n> Are we looking for people to write parsers or understand how the language works? It seems to behoove us to write the language description in a way that makes logical sense, which is not what we've done. We're mixing ideas.\n\nYes.  Currently it is structured along logical (semantic) lines.\nYou seem to propose to replace this with a structure on syntactic lines.\n\n> The spec isn't written in stone. We can still change and improve it. To say this is throwing your hands up in defeat and saying, \"Well, it's this way now. I guess that's it.\"\n\nWe are not going to change the syntax.\nWe certainly can change the grammar to reflect the syntax in a better way.\n\n> > we need to make sure that we only call actual selectors selectors, not any syntactic component of selectors\n> \n> This is what I'm saying! The [] itself isn't the selector, the items within it are. \n\nThe selectors are the things you can chain after the `$` (well, we also have made `$` a selector).  Internals of selectors aren\u2019t selectors.\n\nGr\u00fc\u00dfe, Carsten\n\n",
+          "createdAt": "2022-06-22T09:55:46Z",
+          "updatedAt": "2022-06-22T09:55:46Z"
+        },
+        {
+          "author": "gregsdennis",
+          "authorAssociation": "COLLABORATOR",
+          "body": "> We are not going to change the syntax.\r\n> We certainly can change the grammar to reflect the syntax in a better way.\r\n\r\nI'm not suggesting we change the syntax.  I apologize that I suggested otherwise.\r\n\r\nI _am_ suggesting that we look at the syntax breakdown differently than what we currently have.",
+          "createdAt": "2022-06-22T10:33:56Z",
+          "updatedAt": "2022-06-22T10:33:56Z"
+        }
+      ]
+    },
+    {
+      "number": 203,
+      "id": "I_kwDOEIqrgc5MWMdq",
+      "title": "Add extension point",
+      "url": "https://github.com/ietf-wg-jsonpath/draft-ietf-jsonpath-base/issues/203",
+      "state": "OPEN",
+      "author": "cabo",
+      "authorAssociation": "MEMBER",
+      "assignees": [],
+      "labels": [],
+      "body": "At the June interim, we discussed extension points, and decided we should have one.\r\nThis issue is intended to hold discussion of the extension point until we have a complete proposal.",
+      "createdAt": "2022-06-22T20:54:50Z",
+      "updatedAt": "2022-06-22T21:23:06Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "cabo",
+          "authorAssociation": "MEMBER",
+          "body": "This proposal will be informed by the discussion in #160.\r\n\r\nThe general idea is to have a function-calling-style syntax with a comma-separated argument list in parentheses following a name:\r\n\r\n```\r\nfunction-call = id S \"(\" S [ arg *( S \",\" S arg)] \")\"\r\n```\r\n\r\nid is the typical `[-a-z][-a-z0-9]*`, where we can discuss whether this should indeed be pure kebab, and indeed be lower-case only (both of which would be my strong preference).\r\n\r\n",
+          "createdAt": "2022-06-22T21:01:52Z",
+          "updatedAt": "2022-06-22T21:01:52Z"
+        },
+        {
+          "author": "cabo",
+          "authorAssociation": "MEMBER",
+          "body": "The names of the id (function-name) go into a registry, which probably should be on the spectrum between specification-required and IETF review, which we'll need to discuss.\r\n\r\nThe base spec comes with one such preregistered function, `length`, the exact semantics need to be defined (separate issue, e.g., what is its domain, what does it count, ...).  The idea is to make sure people do implement the extension point mechanism and don't just ignore it (See RFC 9170).",
+          "createdAt": "2022-06-22T21:16:12Z",
+          "updatedAt": "2022-06-22T21:16:12Z"
+        },
+        {
+          "author": "cabo",
+          "authorAssociation": "MEMBER",
+          "body": "Two items are less clear:\r\n\r\n* What is `arg`?\r\n* Where does the `function-call` production go into?\r\n\r\nWe have split the expression language into boolean expressions and comparable; these two don't mix except through a comparison.  Comparables have a subset of JSON types available to them, boolean expressions obviously not.  What a path (currently always singular-path) is evaluated to depends on the place in that structure it is used in: In a comparable, if extracts the JSON value a path points to (which is why it needs to be singular there), in a boolean expression it checks existence (is there at least one node matching this path \u2794 true, false otherwise).\r\n\r\nSo what does `flobble(@.foo)` mean?\r\n(Of course, we could leave that interpretation to specific functions, essentially giving formal parameters a type of json-value vs. boolean.  People could force boolean evaluation using `!!@.foo`.)\r\n\r\nWhere does the function go?  It could go into the the two places where a singular-path can go right now.  We'd have a similar type issue there.\r\n\r\n(I'm not sure we need more fine-grained type checking here, but we do need to define what a path means.)",
+          "createdAt": "2022-06-22T21:23:06Z",
+          "updatedAt": "2022-06-22T21:23:06Z"
         }
       ]
     }
@@ -31064,6 +31181,46 @@
       "mergeCommit": null,
       "comments": [],
       "reviews": []
+    },
+    {
+      "number": 202,
+      "id": "PR_kwDOEIqrgc46GhTJ",
+      "title": "Remove confusing periods at the end of the list in \u00a73.5 intro",
+      "url": "https://github.com/ietf-wg-jsonpath/draft-ietf-jsonpath-base/pull/202",
+      "state": "OPEN",
+      "author": "cabo",
+      "authorAssociation": "MEMBER",
+      "assignees": [],
+      "labels": [],
+      "body": "Fix #200",
+      "createdAt": "2022-06-22T08:40:02Z",
+      "updatedAt": "2022-06-22T09:35:10Z",
+      "baseRepository": "ietf-wg-jsonpath/draft-ietf-jsonpath-base",
+      "baseRefName": "main",
+      "baseRefOid": "822fd6d3d5d55d1ae1637498b28df086ee9f9c72",
+      "headRepository": "ietf-wg-jsonpath/draft-ietf-jsonpath-base",
+      "headRefName": "confusing-periods",
+      "headRefOid": "62e8219901a3d579cef40bc80ceaf2d7a3ae2747",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOEIqrgc48fWGs",
+          "commit": {
+            "abbreviatedOid": "62e8219"
+          },
+          "author": "gregsdennis",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2022-06-22T09:35:10Z",
+          "updatedAt": "2022-06-22T09:35:10Z",
+          "comments": []
+        }
+      ]
     }
   ]
 }
