@@ -1809,7 +1809,7 @@ This means that some
 operations that might be considered erroneous, such as indexing beyond the
 end of an array,
 simply result in fewer nodes being selected.<a href="#section-3.3-7" class="pilcrow">¶</a></p>
-<p id="section-3.3-8">Let's walk through an example in detail. With the argument <code>{"a":[{"b":0},{"b":1},{"c":2}]}</code>, the
+<p id="section-3.3-8">Consider this example. With the argument <code>{"a":[{"b":0},{"b":1},{"c":2}]}</code>, the
 query <code>$.a[*].b</code> selects the following list of nodes: <code>0</code>, <code>1</code>
 (denoted here by their value).<a href="#section-3.3-8" class="pilcrow">¶</a></p>
 <p id="section-3.3-9">The query consists of <code>$</code> followed by three selectors: <code>.a</code>, <code>[*]</code>, and <code>.b</code>.<a href="#section-3.3-9" class="pilcrow">¶</a></p>
