@@ -5,10 +5,10 @@
 JSONPath WG                                              S. Gössner, Ed.
 Internet-Draft                                   Fachhochschule Dortmund
 Intended status: Standards Track                      G. Normington, Ed.
-Expires: 25 December 2022                                               
+Expires: 26 December 2022                                               
                                                          C. Bormann, Ed.
                                                   Universität Bremen TZI
-                                                            23 June 2022
+                                                            24 June 2022
 
 
                   JSONPath: Query expressions for JSON
@@ -48,7 +48,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 25 December 2022.
+   This Internet-Draft will expire on 26 December 2022.
 
 Copyright Notice
 
@@ -1620,15 +1620,18 @@ Examples
 5.2.  Attacks on Security Mechanisms that Employ JSONPath
 
    Where JSONPath is used as a part of a security mechanism, attackers
-   can attempt to evoke unexpected behavior, or take advantage of
-   differences in behavior between JSONPath implementations.
+   can attempt to provoke unexpected or unpredictable behavior, or take
+   advantage of differences in behavior between JSONPath
+   implementations.
 
-   This also applies to underlying technologies such as UTF-8 (see
-   Section 10 of [RFC3629]), the Unicode character set, and JSON.  A
-   characteristic of JSON that can lead to varying results is the fact
-   that JSON objects are unordered; therefore, the order in which
-   results of a JSONPath query reflect the presence of JSON object
-   members can vary with implementations.
+   Unexpected or unpredictable behaviour can arise from an argument with
+   certain constructs described as unpredictable by [RFC8259].
+   Predictable behavior can be expected, except in relation to the
+   ordering of objects, for any argument conforming with [RFC7493].
+
+   Other attacks can target the behaviour of underlying technologies
+   such as UTF-8 (see Section 10 of [RFC3629]) and the Unicode character
+   set.
 
 6.  References
 
