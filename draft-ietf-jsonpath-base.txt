@@ -1197,7 +1197,7 @@ Syntax
    basic-expr        = exist-expr /
                        paren-expr /
                        relation-expr
-   exist-expr        = [neg-op S] singular-path          ; path existence or non-existence
+   exist-expr        = [logical-not-op S] singular-path  ; path existence or non-existence
 
    Paths in filter expressions are Singular Paths, each of which selects
    at most one node.
@@ -1210,8 +1210,9 @@ Syntax
    selection syntax in the original proposal [?(<expr>)] is naturally
    contained in the current lean syntax [?<expr>] as a special case.
 
-   paren-expr        = [neg-op S] "(" S boolean-expr S ")" ; parenthesized expression
-   neg-op            = "!"                               ; not operator
+   paren-expr        = [logical-not-op S] "(" S boolean-expr S ")"
+                                                         ; parenthesized expression
+   logical-not-op    = "!"                               ; logical NOT operator
 
    relation-expr = comp-expr /                           ; comparison test
                    regex-expr                            ; regular expression test
@@ -1307,6 +1308,58 @@ Semantics
    The semantics of regular expressions are as defined in
    [I-D.draft-bormann-jsonpath-iregexp].
 
+   The logical AND, OR, and NOT operators have the normal semantics of
+   Boolean algebra and consequently obey these laws (where P, Q, and R
+   are any expressions with syntax logical-and-expr, T is any true
+   expression, such as 1 == 1, and F is any false expression, such as 1
+   == 0):
+
+     +======================+===============+=======================+
+     |         Law          |   Expression  | Equivalent expression |
+     +======================+===============+=======================+
+     | Associativity of OR  | P || (Q || R) |     (P || Q) || R     |
+     +----------------------+---------------+-----------------------+
+     | Associativity of AND | P && (Q && R) |     (P && Q) && R     |
+     +----------------------+---------------+-----------------------+
+     | Commutativity of OR  |     P || Q    |         Q || R        |
+     +----------------------+---------------+-----------------------+
+     | Commutativity of AND |     P && Q    |         Q && R        |
+     +----------------------+---------------+-----------------------+
+     | Distributivity of OR | P || (Q && R) |  (P || Q) && (P || R) |
+     |       over AND       |               |                       |
+     +----------------------+---------------+-----------------------+
+     |  Distributivity of   | P && (Q || R) |  (P && Q) || (P && R) |
+     |     AND over OR      |               |                       |
+     +----------------------+---------------+-----------------------+
+     |   Identity for OR    |     P || F    |           P           |
+     +----------------------+---------------+-----------------------+
+     |   Identity for AND   |     P && T    |           P           |
+     +----------------------+---------------+-----------------------+
+     |  Anihilator for OR   |     P || T    |           T           |
+     +----------------------+---------------+-----------------------+
+     |  Anihilator for AND  |     P && F    |           F           |
+     +----------------------+---------------+-----------------------+
+     |  Idempotency of OR   |     P || P    |           P           |
+     +----------------------+---------------+-----------------------+
+     |  Idempotency of AND  |     P && P    |           P           |
+     +----------------------+---------------+-----------------------+
+     |     Absorption 1     | P && (P || Q) |           P           |
+     +----------------------+---------------+-----------------------+
+     |     Absorption 2     | P || (P && Q) |           P           |
+     +----------------------+---------------+-----------------------+
+     |  Complementation 1   |   P && !(P)   |           F           |
+     +----------------------+---------------+-----------------------+
+     |  Complementation 2   |   P || !(P)   |           T           |
+     +----------------------+---------------+-----------------------+
+     |   Double negation    |    !(!(P))    |           P           |
+     +----------------------+---------------+-----------------------+
+     |     De Morgan 1      |  !(P) && !(Q) |       !(P || Q)       |
+     +----------------------+---------------+-----------------------+
+     |     De Morgan 2      |  !(P) || !(Q) |       !(P && Q)       |
+     +----------------------+---------------+-----------------------+
+
+                     Table 13: Logical operator laws
+
 Examples
 
    JSON document:
@@ -1349,7 +1402,7 @@ Examples
          |             |             |             | logical OR  |
          +-------------+-------------+-------------+-------------+
 
-                     Table 13: Filter selector examples
+                     Table 14: Filter selector examples
 
 3.5.9.  List Selector
 
@@ -1411,7 +1464,7 @@ Examples
                  |   0]   | "a"    |  $[0]  | entries    |
                  +--------+--------+--------+------------+
 
-                      Table 14: List selector examples
+                      Table 15: List selector examples
 
 3.6.  Semantics of null
 
@@ -1453,7 +1506,7 @@ Examples
       |                   |        |           | as object key      |
       +-------------------+--------+-----------+--------------------+
 
-            Table 15: Examples involving (or not involving) null
+            Table 16: Examples involving (or not involving) null
 
 3.7.  Normalized Paths
 
@@ -1534,7 +1587,7 @@ Examples
     |             |    U+00B1 U+0027 U+005D)     |                   |
     +-------------+------------------------------+-------------------+
 
-                    Table 16: Normalized Path examples
+                    Table 17: Normalized Path examples
 
    $["\u00b1"] is normalized into $['±'] (noise in the table and lack of
    typewriter font is due to RFCXMLv3 limitations).
@@ -1784,7 +1837,7 @@ A.1.  JSONPath and XPath
 
    $.store.book[?(@.price < 10)].title
 
-   Table 17 extends Table 1 by providing a comparison with similar XPath
+   Table 18 extends Table 1 by providing a comparison with similar XPath
    concepts.
 
     +==========+==================+===================================+
@@ -1828,9 +1881,9 @@ A.1.  JSONPath and XPath
     | ()       | n/a              | grouping                          |
     +----------+------------------+-----------------------------------+
 
-                Table 17: XPath syntax compared to JSONPath
+                Table 18: XPath syntax compared to JSONPath
 
-   For further illustration, Table 18 shows some XPath expressions and
+   For further illustration, Table 19 shows some XPath expressions and
    their JSONPath equivalents.
 
    +======================+========================+===================+
@@ -1877,7 +1930,7 @@ A.1.  JSONPath and XPath
    |                      |                        | input value       |
    +----------------------+------------------------+-------------------+
 
-     Table 18: Example XPath expressions and their JSONPath equivalents
+     Table 19: Example XPath expressions and their JSONPath equivalents
 
    XPath has a lot more functionality (location paths in unabbreviated
    syntax, operators and functions) than listed in this comparison.

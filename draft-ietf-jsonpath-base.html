@@ -3005,7 +3005,7 @@ logical-and-expr = basic-expr *(S "&amp;&amp;" S basic-expr)  ; conjunction
 basic-expr        = exist-expr /
                     paren-expr /
                     relation-expr
-exist-expr        = [neg-op S] singular-path          ; path existence or non-existence
+exist-expr        = [logical-not-op S] singular-path  ; path existence or non-existence
 </pre><a href="#section-3.5.8.1-5" class="pilcrow">¶</a>
 </div>
 <p id="section-3.5.8.1-6">Paths in filter expressions are Singular Paths, each of which selects at most one node.<a href="#section-3.5.8.1-6" class="pilcrow">¶</a></p>
@@ -3019,8 +3019,9 @@ abs-singular-path = root-selector *(S (dot-selector / index-selector))
 <p id="section-3.5.8.1-8">Parentheses can be used with <code>boolean-expr</code> for grouping. So filter selection syntax in the original proposal <code>[?(&lt;expr&gt;)]</code> is naturally contained in the current lean syntax <code>[?&lt;expr&gt;]</code> as a special case.<a href="#section-3.5.8.1-8" class="pilcrow">¶</a></p>
 <div id="section-3.5.8.1-9">
 <pre class="lang-abnf sourcecode">
-paren-expr        = [neg-op S] "(" S boolean-expr S ")" ; parenthesized expression
-neg-op            = "!"                               ; not operator
+paren-expr        = [logical-not-op S] "(" S boolean-expr S ")"
+                                                      ; parenthesized expression
+logical-not-op    = "!"                               ; logical NOT operator
 
 relation-expr = comp-expr /                           ; comparison test
                 regex-expr                            ; regular expression test
@@ -3133,6 +3134,196 @@ filter selector iterates over the array or object.<a href="#section-3.5.8.2-2" c
 <p id="section-3.5.8.2-3">Comparisons using one of the operators <code>&lt;</code>, <code>&lt;=</code>, <code>&gt;</code>, and <code>&gt;=</code> are between numeric values only.
 Using these operators to compare other types of values produces a "false" comparison result.<a href="#section-3.5.8.2-3" class="pilcrow">¶</a></p>
 <p id="section-3.5.8.2-4">The semantics of regular expressions are as defined in <span>[<a href="#I-D.draft-bormann-jsonpath-iregexp" class="xref">I-D.draft-bormann-jsonpath-iregexp</a>]</span>.<a href="#section-3.5.8.2-4" class="pilcrow">¶</a></p>
+<p id="section-3.5.8.2-5">The logical AND, OR, and NOT operators have the normal semantics of Boolean algebra and
+consequently obey these laws (where <code>P</code>, <code>Q</code>, and <code>R</code> are any expressions with syntax
+<code>logical-and-expr</code>, <code>T</code> is any true expression, such as <code>1 == 1</code>, and <code>F</code> is any false expression,
+such as <code>1 == 0</code>):<a href="#section-3.5.8.2-5" class="pilcrow">¶</a></p>
+<span id="name-logical-operator-laws"></span><table class="center" id="table-13">
+              <caption>
+<a href="#table-13" class="selfRef">Table 13</a>:
+<a href="#name-logical-operator-laws" class="selfRef">Logical operator laws</a>
+              </caption>
+<thead>
+                <tr>
+                  <th class="text-center" rowspan="1" colspan="1">Law</th>
+                  <th class="text-center" rowspan="1" colspan="1">Expression</th>
+                  <th class="text-center" rowspan="1" colspan="1">Equivalent expression</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="text-center" rowspan="1" colspan="1">Associativity of OR</td>
+                  <td class="text-center" rowspan="1" colspan="1">
+                    <code>P || (Q || R)</code>
+</td>
+                  <td class="text-center" rowspan="1" colspan="1">
+                    <code>(P || Q) || R</code>
+</td>
+                </tr>
+                <tr>
+                  <td class="text-center" rowspan="1" colspan="1">Associativity of AND</td>
+                  <td class="text-center" rowspan="1" colspan="1">
+                    <code>P &amp;&amp; (Q &amp;&amp; R)</code>
+</td>
+                  <td class="text-center" rowspan="1" colspan="1">
+                    <code>(P &amp;&amp; Q) &amp;&amp; R</code>
+</td>
+                </tr>
+                <tr>
+                  <td class="text-center" rowspan="1" colspan="1">Commutativity of OR</td>
+                  <td class="text-center" rowspan="1" colspan="1">
+                    <code>P || Q</code>
+</td>
+                  <td class="text-center" rowspan="1" colspan="1">
+                    <code>Q || R</code>
+</td>
+                </tr>
+                <tr>
+                  <td class="text-center" rowspan="1" colspan="1">Commutativity of AND</td>
+                  <td class="text-center" rowspan="1" colspan="1">
+                    <code>P &amp;&amp; Q</code>
+</td>
+                  <td class="text-center" rowspan="1" colspan="1">
+                    <code>Q &amp;&amp; R</code>
+</td>
+                </tr>
+                <tr>
+                  <td class="text-center" rowspan="1" colspan="1">Distributivity of OR over AND</td>
+                  <td class="text-center" rowspan="1" colspan="1">
+                    <code>P || (Q &amp;&amp; R)</code>
+</td>
+                  <td class="text-center" rowspan="1" colspan="1">
+                    <code>(P || Q) &amp;&amp; (P || R)</code>
+</td>
+                </tr>
+                <tr>
+                  <td class="text-center" rowspan="1" colspan="1">Distributivity of AND over OR</td>
+                  <td class="text-center" rowspan="1" colspan="1">
+                    <code>P &amp;&amp; (Q || R)</code>
+</td>
+                  <td class="text-center" rowspan="1" colspan="1">
+                    <code>(P &amp;&amp; Q) || (P &amp;&amp; R)</code>
+</td>
+                </tr>
+                <tr>
+                  <td class="text-center" rowspan="1" colspan="1">Identity for OR</td>
+                  <td class="text-center" rowspan="1" colspan="1">
+                    <code>P || F</code>
+</td>
+                  <td class="text-center" rowspan="1" colspan="1">
+                    <code>P</code>
+</td>
+                </tr>
+                <tr>
+                  <td class="text-center" rowspan="1" colspan="1">Identity for AND</td>
+                  <td class="text-center" rowspan="1" colspan="1">
+                    <code>P &amp;&amp; T</code>
+</td>
+                  <td class="text-center" rowspan="1" colspan="1">
+                    <code>P</code>
+</td>
+                </tr>
+                <tr>
+                  <td class="text-center" rowspan="1" colspan="1">Anihilator for OR</td>
+                  <td class="text-center" rowspan="1" colspan="1">
+                    <code>P || T</code>
+</td>
+                  <td class="text-center" rowspan="1" colspan="1">
+                    <code>T</code>
+</td>
+                </tr>
+                <tr>
+                  <td class="text-center" rowspan="1" colspan="1">Anihilator for AND</td>
+                  <td class="text-center" rowspan="1" colspan="1">
+                    <code>P &amp;&amp; F</code>
+</td>
+                  <td class="text-center" rowspan="1" colspan="1">
+                    <code>F</code>
+</td>
+                </tr>
+                <tr>
+                  <td class="text-center" rowspan="1" colspan="1">Idempotency of OR</td>
+                  <td class="text-center" rowspan="1" colspan="1">
+                    <code>P || P</code>
+</td>
+                  <td class="text-center" rowspan="1" colspan="1">
+                    <code>P</code>
+</td>
+                </tr>
+                <tr>
+                  <td class="text-center" rowspan="1" colspan="1">Idempotency of AND</td>
+                  <td class="text-center" rowspan="1" colspan="1">
+                    <code>P &amp;&amp; P</code>
+</td>
+                  <td class="text-center" rowspan="1" colspan="1">
+                    <code>P</code>
+</td>
+                </tr>
+                <tr>
+                  <td class="text-center" rowspan="1" colspan="1">Absorption 1</td>
+                  <td class="text-center" rowspan="1" colspan="1">
+                    <code>P &amp;&amp; (P || Q)</code>
+</td>
+                  <td class="text-center" rowspan="1" colspan="1">
+                    <code>P</code>
+</td>
+                </tr>
+                <tr>
+                  <td class="text-center" rowspan="1" colspan="1">Absorption 2</td>
+                  <td class="text-center" rowspan="1" colspan="1">
+                    <code>P || (P &amp;&amp; Q)</code>
+</td>
+                  <td class="text-center" rowspan="1" colspan="1">
+                    <code>P</code>
+</td>
+                </tr>
+                <tr>
+                  <td class="text-center" rowspan="1" colspan="1">Complementation 1</td>
+                  <td class="text-center" rowspan="1" colspan="1">
+                    <code>P &amp;&amp; !(P)</code>
+</td>
+                  <td class="text-center" rowspan="1" colspan="1">
+                    <code>F</code>
+</td>
+                </tr>
+                <tr>
+                  <td class="text-center" rowspan="1" colspan="1">Complementation 2</td>
+                  <td class="text-center" rowspan="1" colspan="1">
+                    <code>P || !(P)</code>
+</td>
+                  <td class="text-center" rowspan="1" colspan="1">
+                    <code>T</code>
+</td>
+                </tr>
+                <tr>
+                  <td class="text-center" rowspan="1" colspan="1">Double negation</td>
+                  <td class="text-center" rowspan="1" colspan="1">
+                    <code>!(!(P))</code>
+</td>
+                  <td class="text-center" rowspan="1" colspan="1">
+                    <code>P</code>
+</td>
+                </tr>
+                <tr>
+                  <td class="text-center" rowspan="1" colspan="1">De Morgan 1</td>
+                  <td class="text-center" rowspan="1" colspan="1">
+                    <code>!(P) &amp;&amp; !(Q)</code>
+</td>
+                  <td class="text-center" rowspan="1" colspan="1">
+                    <code>!(P || Q)</code>
+</td>
+                </tr>
+                <tr>
+                  <td class="text-center" rowspan="1" colspan="1">De Morgan 2</td>
+                  <td class="text-center" rowspan="1" colspan="1">
+                    <code>!(P) || !(Q)</code>
+</td>
+                  <td class="text-center" rowspan="1" colspan="1">
+                    <code>!(P &amp;&amp; Q)</code>
+</td>
+                </tr>
+              </tbody>
+            </table>
 </section>
 </div>
 <div id="examples-7">
@@ -3150,9 +3341,9 @@ Using these operators to compare other types of values produces a "false" compar
 </pre><a href="#section-3.5.8.3-2" class="pilcrow">¶</a>
 </div>
 <p id="section-3.5.8.3-3">Queries:<a href="#section-3.5.8.3-3" class="pilcrow">¶</a></p>
-<span id="name-filter-selector-examples"></span><table class="center" id="table-13">
+<span id="name-filter-selector-examples"></span><table class="center" id="table-14">
               <caption>
-<a href="#table-13" class="selfRef">Table 13</a>:
+<a href="#table-14" class="selfRef">Table 14</a>:
 <a href="#name-filter-selector-examples" class="selfRef">Filter selector examples</a>
               </caption>
 <thead>
@@ -3316,9 +3507,9 @@ components <span class="bcp14">MUST</span> be in the I-JSON range of exact value
 </pre><a href="#section-3.5.9.3-2" class="pilcrow">¶</a>
 </div>
 <p id="section-3.5.9.3-3">Queries:<a href="#section-3.5.9.3-3" class="pilcrow">¶</a></p>
-<span id="name-list-selector-examples"></span><table class="center" id="table-14">
+<span id="name-list-selector-examples"></span><table class="center" id="table-15">
               <caption>
-<a href="#table-14" class="selfRef">Table 14</a>:
+<a href="#table-15" class="selfRef">Table 15</a>:
 <a href="#name-list-selector-examples" class="selfRef">List selector examples</a>
               </caption>
 <thead>
@@ -3392,9 +3583,9 @@ components <span class="bcp14">MUST</span> be in the I-JSON range of exact value
 </pre><a href="#section-3.6.1-2" class="pilcrow">¶</a>
 </div>
 <p id="section-3.6.1-3">Queries:<a href="#section-3.6.1-3" class="pilcrow">¶</a></p>
-<span id="name-examples-involving-or-not-i"></span><table class="center" id="table-15">
+<span id="name-examples-involving-or-not-i"></span><table class="center" id="table-16">
             <caption>
-<a href="#table-15" class="selfRef">Table 15</a>:
+<a href="#table-16" class="selfRef">Table 16</a>:
 <a href="#name-examples-involving-or-not-i" class="selfRef">Examples involving (or not involving) null</a>
             </caption>
 <thead>
@@ -3565,9 +3756,9 @@ normal-element-index      = "0" / (DIGIT1 *DIGIT) ; non-negative decimal integer
           <h4 id="name-examples-11">
 <a href="#name-examples-11" class="section-name selfRef">Examples</a>
           </h4>
-<span id="name-normalized-path-examples"></span><table class="center" id="table-16">
+<span id="name-normalized-path-examples"></span><table class="center" id="table-17">
             <caption>
-<a href="#table-16" class="selfRef">Table 16</a>:
+<a href="#table-17" class="selfRef">Table 17</a>:
 <a href="#name-normalized-path-examples" class="selfRef">Normalized Path examples</a>
             </caption>
 <thead>
@@ -3982,12 +4173,12 @@ inspired by <span>[<a href="#SLICE" class="xref">SLICE</a>]</span> from ECMASCRI
 $.store.book[?(@.price &lt; 10)].title
 </pre><a href="#appendix-A.1-5" class="pilcrow">¶</a>
 </div>
-<p id="appendix-A.1-6"><a href="#tbl-xpath-overview" class="xref">Table 17</a> extends <a href="#tbl-overview" class="xref">Table 1</a> by providing a comparison
+<p id="appendix-A.1-6"><a href="#tbl-xpath-overview" class="xref">Table 18</a> extends <a href="#tbl-overview" class="xref">Table 1</a> by providing a comparison
 with similar XPath concepts.<a href="#appendix-A.1-6" class="pilcrow">¶</a></p>
 <span id="name-xpath-syntax-compared-to-js"></span><div id="tbl-xpath-overview">
-<table class="center" id="table-17">
+<table class="center" id="table-18">
           <caption>
-<a href="#table-17" class="selfRef">Table 17</a>:
+<a href="#table-18" class="selfRef">Table 18</a>:
 <a href="#name-xpath-syntax-compared-to-js" class="selfRef">XPath syntax compared to JSONPath</a>
           </caption>
 <thead>
@@ -4106,12 +4297,12 @@ with similar XPath concepts.<a href="#appendix-A.1-6" class="pilcrow">¶</a></p>
           </tbody>
         </table>
 </div>
-<p id="appendix-A.1-8">For further illustration, <a href="#tbl-xpath-equivalents" class="xref">Table 18</a> shows some XPath expressions
+<p id="appendix-A.1-8">For further illustration, <a href="#tbl-xpath-equivalents" class="xref">Table 19</a> shows some XPath expressions
 and their JSONPath equivalents.<a href="#appendix-A.1-8" class="pilcrow">¶</a></p>
 <span id="name-example-xpath-expressions-a"></span><div id="tbl-xpath-equivalents">
-<table class="center" id="table-18">
+<table class="center" id="table-19">
           <caption>
-<a href="#table-18" class="selfRef">Table 18</a>:
+<a href="#table-19" class="selfRef">Table 19</a>:
 <a href="#name-example-xpath-expressions-a" class="selfRef">Example XPath expressions and their JSONPath equivalents</a>
           </caption>
 <thead>
